@@ -70,10 +70,8 @@ export default function EventDetail() {
     setConfirmando(false);
     setResultadoParcial({ sucesso, falha });
 
-    // Remove da seleção os que falharam, mantém só os confirmados
     setSelecionados(sucesso.map((s) => s.assentoId));
 
-    // Atualiza o status visual dos assentos que deram certo
     setAssentos((prev) =>
       prev.map((a) =>
         sucesso.some((s) => s.assentoId === a.id)
@@ -110,7 +108,7 @@ export default function EventDetail() {
           alt={evento.titulo}
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-bg via-bg/40 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-bg via-bg/40 to-transparent" />
       </div>
 
       <div className="px-6 md:px-16 -mt-16 relative">
@@ -144,20 +142,26 @@ export default function EventDetail() {
           />
         </div>
 
-        {resultadoParcial?.falha.length > 0 && (
-          <div className="mt-6 bg-red-500/10 border border-red-500/30 rounded-lg p-4">
-            <p className="font-sans text-red-400 text-sm font-semibold">
-              Alguns assentos não puderam ser reservados:
-            </p>
-            <ul className="font-sans text-red-400/80 text-sm mt-1 list-disc list-inside">
-              {resultadoParcial.falha.map((f) => (
-                <li key={f.assentoId}>
-                  {f.codigo} — {f.erro || "assento já ocupado"}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        {resultadoParcial?.sucesso.length > 0 && (
+            <div className="mt-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4 flex items-center justify-between flex-wrap gap-3">
+                <p className="font-sans text-emerald-400 text-sm">
+                {resultadoParcial.sucesso.length} assento(s) reservado(s)! Finalize o pagamento antes que a reserva expire.
+                </p>
+                <button
+                onClick={() =>
+                    navigate("/pagamento", {
+                    state: {
+                        reservas: resultadoParcial.sucesso.map((s) => s.reserva),
+                        eventoTitulo: evento.titulo,
+                    },
+                    })
+                }
+                className="font-sans font-semibold bg-brand hover:bg-brand-hover text-white rounded-lg px-4 py-2 text-sm transition-colors"
+                >
+                Ir para pagamento
+                </button>
+            </div>
+            )}
 
         {resultadoParcial?.sucesso.length > 0 && (
           <div className="mt-4 bg-emerald-500/10 border border-emerald-500/30 rounded-lg p-4">

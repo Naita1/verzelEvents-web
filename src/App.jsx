@@ -2,11 +2,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
-import EventDetail from "./pages/EventDetail";
 import Payment from "./pages/Payment";
-import MyTickets from "./pages/MyTickets";
 import Portaria from "./pages/Portaria";
+import MyTickets from "./pages/MyTickets";
+import EventDetail from "./pages/EventDetail";
+import Organizador from "./pages/Organizador";
 import ProtectedRoute from "./routes/ProtectedRoute";
+
 
 function App() {
   return (
@@ -38,6 +40,14 @@ function App() {
             element={
               <ProtectedRoute rolesPermitidas={["PORTARIA"]}>
                 <Portaria />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/organizador"
+            element={
+              <ProtectedRoute rolesPermitidas={["ORGANIZADOR"]}>
+                <Organizador />
               </ProtectedRoute>
             }
           />

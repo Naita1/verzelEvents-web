@@ -34,7 +34,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-bg px-6 md:px-16 py-12">
       <span className="font-sans text-white/40 text-sm tracking-widest uppercase">
-        Plataforma de Eventos
+          THE STAGE IS YOURS
       </span>
       <h1 className="font-display text-5xl md:text-6xl text-white tracking-wide mt-2">
         O QUE VOCÊ QUER <span className="text-brand">VIVER</span> HOJE?

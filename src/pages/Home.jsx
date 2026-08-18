@@ -37,18 +37,31 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-bg">
-      <Hero
-        busca={busca}
-        setBusca={setBusca}
-        tipos={tipos}
-        tipoFiltro={tipoFiltro}
-        setTipoFiltro={setTipoFiltro}
-        imagemFundo={backgroundImg}
-      />
+      <div className="relative w-full overflow-hidden">
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <img
+            src={backgroundImg}
+            alt="Background Eventos"
+            className="w-full h-full object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-linear-to-b from-[#1a050b]/85 via-[#0f0407]/90 to-bg" />
+          <div className="absolute inset-0 bg-black/40" />
+        </div>
 
-      <FeaturedShowcase eventos={eventosFiltrados} loading={loading} />
+        <div className="relative z-10 pt-28 pb-16 space-y-12">
+          <FeaturedShowcase eventos={eventos} loading={loading} />
 
-      <div className="py-16 md:py-20 mt-4">
+          <Hero
+            busca={busca}
+            setBusca={setBusca}
+            tipos={tipos}
+            tipoFiltro={tipoFiltro}
+            setTipoFiltro={setTipoFiltro}
+          />
+        </div>
+      </div>
+
+      <div className="py-12 md:py-16">
         <div className="max-w-6xl mx-auto px-6">
           <div className="flex items-end justify-between gap-4 mb-8">
             <div>

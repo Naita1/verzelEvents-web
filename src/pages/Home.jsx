@@ -1,6 +1,10 @@
 import { useEffect, useState, useMemo } from "react";
+import { motion } from "framer-motion";
 import { listarEventos } from "../services/eventService";
+import Hero from "../components/Hero";
+import FeaturedShowcase from "../components/FeaturedShowcase";
 import EventCard from "../components/EventCard";
+import backgroundImg from "../assets/background.jpg";
 
 export default function Home() {
   const [eventos, setEventos] = useState([]);
@@ -32,55 +36,54 @@ export default function Home() {
   }, [eventos, busca, tipoFiltro]);
 
   return (
-    <div className="min-h-screen bg-bg px-6 md:px-16 py-12">
-      <span className="font-sans text-white/40 text-sm tracking-widest uppercase">
-          THE STAGE IS YOURS
-      </span>
-      <h1 className="font-display text-5xl md:text-6xl text-white tracking-wide mt-2">
-        O QUE VOCÊ QUER <span className="text-brand">VIVER</span> HOJE?
-      </h1>
+    <div className="min-h-screen bg-bg">
+      <Hero
+        busca={busca}
+        setBusca={setBusca}
+        tipos={tipos}
+        tipoFiltro={tipoFiltro}
+        setTipoFiltro={setTipoFiltro}
+        imagemFundo={backgroundImg}
+      />
 
-      <div className="flex flex-col md:flex-row gap-3 mt-8">
-        <input
-          type="text"
-          placeholder="Buscar por evento ou local..."
-          value={busca}
-          onChange={(e) => setBusca(e.target.value)}
-          className="flex-1 bg-surface border border-white/10 rounded-lg px-4 py-2 text-white font-sans outline-none focus:border-brand transition-colors"
-        />
-        <div className="flex gap-2 overflow-x-auto">
-          {tipos.map((tipo) => (
-            <button
-              key={tipo}
-              onClick={() => setTipoFiltro(tipo)}
-              className={`font-sans text-sm px-4 py-2 rounded-lg whitespace-nowrap transition-colors ${
-                tipoFiltro === tipo
-                  ? "bg-brand text-white"
-                  : "bg-surface text-white/60 border border-white/10 hover:border-white/30"
-              }`}
-            >
-              {tipo}
-            </button>
-          ))}
+      <FeaturedShowcase eventos={eventosFiltrados} loading={loading} />
+
+      <div className="py-16 md:py-20 mt-4">
+        <div className="max-w-6xl mx-auto px-6">
+          <div className="flex items-end justify-between gap-4 mb-8">
+            <div>
+              <span className="font-sans text-[11px] font-semibold text-brand uppercase tracking-[0.2em] block mb-2">
+                Catálogo completo
+              </span>
+              <h2 className="font-display text-3xl md:text-4xl text-white tracking-wide">
+                TODOS OS <span className="text-brand">EVENTOS</span>
+              </h2>
+            </div>
+            {!loading && !erro && (
+              <span className="font-sans text-xs text-white/40 whitespace-nowrap mb-1">
+                {eventosFiltrados.length} evento{eventosFiltrados.length !== 1 ? "s" : ""}
+              </span>
+            )}
+          </div>
+
+          {erro && <p className="font-sans text-red-400">{erro}</p>}
+          {!loading && !erro && eventosFiltrados.length === 0 && (
+            <p className="font-sans text-white/50">Nenhum evento encontrado.</p>
+          )}
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
+            {eventosFiltrados.map((evento, index) => (
+              <motion.div
+                key={evento.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.3) }}
+              >
+                <EventCard evento={evento} />
+              </motion.div>
+            ))}
+          </div>
         </div>
-      </div>
-
-      {loading && (
-        <p className="font-sans text-white/50 mt-12">Carregando eventos...</p>
-      )}
-      {erro && (
-        <p className="font-sans text-red-400 mt-12">{erro}</p>
-      )}
-      {!loading && !erro && eventosFiltrados.length === 0 && (
-        <p className="font-sans text-white/50 mt-12">
-          Nenhum evento encontrado.
-        </p>
-      )}
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mt-8">
-        {eventosFiltrados.map((evento) => (
-          <EventCard key={evento.id} evento={evento} />
-        ))}
       </div>
     </div>
   );

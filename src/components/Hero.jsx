@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 
 export default function Hero({
   busca,
@@ -9,11 +10,50 @@ export default function Hero({
   imagemFundo,
 }) {
   const [dropdownAberto, setDropdownAberto] = useState(false);
+  const [dropdownPos, setDropdownPos] = useState({ top: 0, left: 0, width: 0 });
+  const filtroRef = useRef(null);
+  const menuRef = useRef(null);
+
+  const atualizarPosicao = useCallback(() => {
+    if (!filtroRef.current) return;
+    const rect = filtroRef.current.getBoundingClientRect();
+    setDropdownPos({
+      top: rect.bottom + window.scrollY + 8,
+      left: rect.left + window.scrollX,
+      width: rect.width,
+    });
+  }, []);
+
+  function alternarDropdown() {
+    if (!dropdownAberto) atualizarPosicao();
+    setDropdownAberto((v) => !v);
+  }
 
   function selecionarTipo(tipo) {
     setTipoFiltro(tipo);
     setDropdownAberto(false);
   }
+
+  useEffect(() => {
+    if (!dropdownAberto) return;
+
+    function handleCliqueFora(e) {
+      const cliqueNoFiltro = filtroRef.current && filtroRef.current.contains(e.target);
+      const cliqueNoMenu = menuRef.current && menuRef.current.contains(e.target);
+      if (!cliqueNoFiltro && !cliqueNoMenu) {
+        setDropdownAberto(false);
+      }
+    }
+
+    window.addEventListener("resize", atualizarPosicao);
+    window.addEventListener("scroll", atualizarPosicao, true);
+    document.addEventListener("mousedown", handleCliqueFora);
+    return () => {
+      window.removeEventListener("resize", atualizarPosicao);
+      window.removeEventListener("scroll", atualizarPosicao, true);
+      document.removeEventListener("mousedown", handleCliqueFora);
+    };
+  }, [dropdownAberto, atualizarPosicao]);
 
   return (
     <div className="relative min-h-95 md:min-h-105 overflow-visible bg-[#0d0e12] z-20">
@@ -56,10 +96,10 @@ export default function Hero({
             </button>
           </div>
 
-          <div className="relative">
+          <div className="relative" ref={filtroRef}>
             <button
               type="button"
-              onClick={() => setDropdownAberto((v) => !v)}
+              onClick={alternarDropdown}
               className="w-full flex items-center justify-between bg-[#e2e8f0] hover:bg-[#edf2f7] border border-white/20 rounded-full px-5 py-3 font-sans text-sm text-[#1e293b] font-medium shadow-xl transition-all duration-200 active:scale-[0.99]"
             >
               <span>{tipoFiltro === "TODOS" ? "Todos" : tipoFiltro}</span>
@@ -68,20 +108,32 @@ export default function Hero({
               </span>
             </button>
 
-            {dropdownAberto && (
-              <div className="absolute top-full mt-2 w-full bg-[#e2e8f0] border border-[#cbd5e1] rounded-2xl overflow-hidden z-50 shadow-2xl transform-gpu transition-all duration-200 animate-in fade-in slide-in-from-top-2">
-                {tipos.map((tipo) => (
-                  <button
-                    key={tipo}
-                    type="button"
-                    onClick={() => selecionarTipo(tipo)}
-                    className="w-full text-left px-5 py-3 font-sans text-sm text-[#334155] font-medium hover:bg-[#581c25] hover:text-white transition-colors duration-150"
-                  >
-                    {tipo === "TODOS" ? "Todos" : tipo}
-                  </button>
-                ))}
-              </div>
-            )}
+            {dropdownAberto &&
+              typeof document !== "undefined" &&
+              createPortal(
+                <div
+                  ref={menuRef}
+                  style={{
+                    position: "absolute",
+                    top: dropdownPos.top,
+                    left: dropdownPos.left,
+                    width: dropdownPos.width,
+                  }}
+                  className="z-[9999] bg-[#e2e8f0] border border-[#cbd5e1] rounded-2xl overflow-hidden shadow-2xl transform-gpu transition-all duration-200 animate-in fade-in slide-in-from-top-2"
+                >
+                  {tipos.map((tipo) => (
+                    <button
+                      key={tipo}
+                      type="button"
+                      onClick={() => selecionarTipo(tipo)}
+                      className="w-full text-left px-5 py-3 font-sans text-sm text-[#334155] font-medium hover:bg-[#581c25] hover:text-white transition-colors duration-150"
+                    >
+                      {tipo === "TODOS" ? "Todos" : tipo}
+                    </button>
+                  ))}
+                </div>,
+                document.body
+              )}
           </div>
         </div>
       </div>

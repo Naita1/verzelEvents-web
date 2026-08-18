@@ -103,23 +103,28 @@ export default function FeaturedShowcase({ eventos, loading }) {
         onMouseLeave={() => setIsPaused(false)}
         onFocus={() => setIsPaused(true)}
         onBlur={() => setIsPaused(false)}
-        className="relative w-full bg-[#2d0a14]/65 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl shadow-black/60 min-h-95 p-6 sm:p-8 md:p-10 md:px-14 outline-none focus-visible:ring-2 focus-visible:ring-brand/50"
+        className="relative w-full bg-[#2d0a14]/85 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl shadow-black/60 min-h-95 p-6 sm:p-8 md:p-10 md:px-14 outline-none focus-visible:ring-2 focus-visible:ring-brand/50 card-ticket-mask"
       >
         {temEventos && eventos.length > 1 && (
           <>
             <button
               onClick={anterior}
               aria-label="Evento anterior"
-              className="absolute left-2 md:-left-6 top-1/2 -translate-y-1/2 z-30 w-9 h-9 md:w-12 md:h-12 rounded-full bg-bg/90 md:bg-bg border border-white/10 backdrop-blur flex items-center justify-center text-white/80 font-bold text-lg hover:text-white hover:border-brand/50 transition-all duration-200 active:scale-90 shadow-lg"
+              className="absolute -left-5 md:-left-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#cbd5e1] hover:bg-white text-zinc-900 flex items-center justify-center transition-all duration-200 active:scale-95 shadow-xl hover:scale-105"
             >
-              ‹
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+              </svg>
             </button>
+
             <button
               onClick={proximo}
               aria-label="Próximo evento"
-              className="absolute right-2 md:-right-6 top-1/2 -translate-y-1/2 z-30 w-9 h-9 md:w-12 md:h-12 rounded-full bg-bg/90 md:bg-bg border border-white/10 backdrop-blur flex items-center justify-center text-white/80 font-bold text-lg hover:text-white hover:border-brand/50 transition-all duration-200 active:scale-90 shadow-lg"
+              className="absolute -right-5 md:-right-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#cbd5e1] hover:bg-white text-zinc-900 flex items-center justify-center transition-all duration-200 active:scale-95 shadow-xl hover:scale-105"
             >
-              ›
+              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+              </svg>
             </button>
           </>
         )}
@@ -134,7 +139,7 @@ export default function FeaturedShowcase({ eventos, loading }) {
               <div className="h-10 w-36 bg-white/10 rounded-full mt-6" />
             </div>
             <div className="shrink-0">
-              <div className="w-37.5 sm:w-45 md:w-52.5 aspect-2/3 rounded-2xl bg-white/10" />
+              <div className="w-37.5 sm:w-45 md:w-52.5 aspect-2/3 rounded-2xl bg-white/10 ticket-mask" />
             </div>
           </div>
         )}
@@ -198,7 +203,7 @@ export default function FeaturedShowcase({ eventos, loading }) {
                 </div>
 
                 <div className="shrink-0 flex items-center justify-center my-auto">
-                  <div className="relative w-36 sm:w-44 md:w-52 aspect-2/3 overflow-hidden rounded-2xl bg-zinc-900 shadow-2xl group ring-1 ring-white/10">
+                  <div className="relative w-36 sm:w-44 md:w-52 aspect-2/3 overflow-hidden rounded-2xl bg-zinc-900 shadow-2xl group ticket-mask">
                     {imgLoading && (
                       <div className="absolute inset-0 animate-pulse bg-linear-to-br from-zinc-800 to-zinc-900" />
                     )}
@@ -209,7 +214,7 @@ export default function FeaturedShowcase({ eventos, loading }) {
                         alt={currentEvent?.titulo || "Pôster do evento"}
                         onLoad={marcarPronto}
                         onError={marcarErro}
-                        className={`w-full h-full object-cover object-center rounded-2xl transform-gpu transition-all duration-500 ease-out group-hover:scale-105 ${
+                        className={`w-full h-full object-cover object-center transform-gpu transition-all duration-500 ease-out group-hover:scale-105 ${
                           imgReady ? "opacity-100" : "opacity-0"
                         }`}
                       />

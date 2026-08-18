@@ -35,3 +35,12 @@
 .shadow-deep {
   box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.6);
 }
+
+.ticket-mask {
+  mask-image: radial-gradient(circle at 0% 50%, transparent 16px, black 17px),
+              radial-gradient(circle at 100% 50%, transparent 16px, black 17px);
+  mask-composite: intersect;
+  -webkit-mask-image: radial-gradient(circle at 0% 50%, transparent 16px, black 17px),
+                      radial-gradient(circle at 100% 50%, transparent 16px, black 17px);
+  -webkit-mask-composite: source-in;
+}

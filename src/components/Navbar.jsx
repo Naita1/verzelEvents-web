@@ -21,8 +21,12 @@ export default function Navbar() {
   }
 
   const linksDoRole = user?.role ? LINKS_POR_ROLE[user.role] || [] : [];
-  
   const primeiroNome = user?.nome ? user.nome.trim().split(" ")[0] : "";
+
+  // Normaliza o caminho atual removendo a barra final para evitar divergências ex: "/organizador/" vs "/organizador"
+  const currentPath = location.pathname.endsWith("/") && location.pathname !== "/"
+    ? location.pathname.slice(0, -1)
+    : location.pathname;
 
   return (
     <header className="absolute top-0 left-0 w-full z-50 bg-linear-to-b from-black/80 to-transparent pt-6 pb-4 px-8 md:px-16">
@@ -35,22 +39,26 @@ export default function Navbar() {
 
         <div className="flex items-center gap-8 text-white font-sans text-xs md:text-sm tracking-wide">
           
+          {/* Link público 'Eventos' */}
           <Link
             to="/"
             className={`group/link relative transition-colors duration-200 ${
-              location.pathname === "/" ? "text-white font-semibold" : "text-white/70 hover:text-white"
+              currentPath === "/" ? "text-white font-semibold" : "text-white/70 hover:text-white"
             }`}
           >
             Eventos
             <span
               className={`absolute left-0 -bottom-1 h-px bg-brand transition-all duration-300 ${
-                location.pathname === "/" ? "w-full" : "w-0 group-hover/link:w-full"
+                currentPath === "/" ? "w-full" : "w-0 group-hover/link:w-full"
               }`}
             />
           </Link>
 
+          {/* Links do perfil (ORGANIZADOR, PORTARIA, etc.) */}
           {linksDoRole.map((link) => {
-            const isAtivo = location.pathname.startsWith(link.to);
+            const linkPath = link.to.endsWith("/") && link.to !== "/" ? link.to.slice(0, -1) : link.to;
+            const isAtivo = currentPath === linkPath;
+
             return (
               <Link
                 key={link.to}

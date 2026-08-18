@@ -7,6 +7,7 @@ import Portaria from "./pages/Portaria";
 import MyTickets from "./pages/MyTickets";
 import EventDetail from "./pages/EventDetail";
 import Organizador from "./pages/Organizador";
+import SharedTicket from "./pages/SharedTicket";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 
@@ -18,7 +19,7 @@ function App() {
         <Route element={<MainLayout />}>
           <Route path="/" element={<Home />} />
           <Route path="/eventos/:id" element={<EventDetail />} />
-
+          <Route path="/ingressos/compartilhado/:token" element={<SharedTicket />} />
           <Route
             path="/pagamento"
             element={

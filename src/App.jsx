@@ -8,6 +8,7 @@ import MyTickets from "./pages/MyTickets";
 import EventDetail from "./pages/EventDetail";
 import Organizador from "./pages/Organizador";
 import SharedTicket from "./pages/SharedTicket";
+import CreateStaff from "./pages/CreateStaff";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 
@@ -49,6 +50,14 @@ function App() {
             element={
               <ProtectedRoute rolesPermitidas={["ORGANIZADOR"]}>
                 <Organizador />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/organizador/staff/novo"
+            element={
+              <ProtectedRoute rolesPermitidas={["ORGANIZADOR"]}>
+                <CreateStaff />
               </ProtectedRoute>
             }
           />

@@ -3,7 +3,10 @@ import { useAuth } from "../context/AuthContext";
 
 const LINKS_POR_ROLE = {
   CLIENTE: [{ to: "/meus-ingressos", label: "Meus Ingressos" }],
-  ORGANIZADOR: [{ to: "/organizador", label: "Meus Eventos" }],
+  ORGANIZADOR: [
+    { to: "/organizador", label: "Meus Eventos" },
+    { to: "/organizador/staff/novo", label: "Nova Equipe" },
+  ],
   PORTARIA: [{ to: "/portaria", label: "Validar Ingresso" }],
 };
 

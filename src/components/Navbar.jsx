@@ -17,61 +17,78 @@ export default function Navbar() {
     navigate("/login");
   }
 
-  const linksDoRole = user ? LINKS_POR_ROLE[user.role] || [] : [];
+  const linksDoRole = user?.role ? LINKS_POR_ROLE[user.role] || [] : [];
+  
+  const primeiroNome = user?.nome ? user.nome.trim().split(" ")[0] : "";
 
   return (
-    <nav className="bg-surface/80 backdrop-blur-sm border-b border-white/10 px-6 md:px-16 py-4 flex items-center justify-between sticky top-0 z-50">
-      <Link to="/" className="font-display text-2xl tracking-wide text-white">
-        EVENT<span className="text-brand">.</span>
-      </Link>
-
-      <div className="flex items-center gap-6">
-        <Link
-          to="/"
-          className={`font-sans text-sm transition-colors ${
-            location.pathname === "/"
-              ? "text-white"
-              : "text-white/50 hover:text-white"
-          }`}
-        >
-          Eventos
+    <header className="absolute top-0 left-0 w-full z-50 bg-linear-to-b from-black/80 to-transparent pt-6 pb-4 px-8 md:px-16">
+      <div className="max-w-7xl mx-auto flex items-center justify-between">
+        
+        <Link to="/" className="flex flex-col text-white tracking-widest font-sans leading-none">
+          <span className="text-xs md:text-sm font-medium opacity-90">THE STAGE</span>
+          <span className="text-xs md:text-sm font-medium pl-6 opacity-90">IS YOURS</span>
         </Link>
 
-        {linksDoRole.map((link) => (
+        <div className="flex items-center gap-8 text-white font-sans text-xs md:text-sm tracking-wide">
+          
           <Link
-            key={link.to}
-            to={link.to}
-            className={`font-sans text-sm transition-colors ${
-              location.pathname.startsWith(link.to)
-                ? "text-white"
-                : "text-white/50 hover:text-white"
+            to="/"
+            className={`group/link relative transition-colors duration-200 ${
+              location.pathname === "/" ? "text-white font-semibold" : "text-white/70 hover:text-white"
             }`}
           >
-            {link.label}
+            Eventos
+            <span
+              className={`absolute left-0 -bottom-1 h-px bg-brand transition-all duration-300 ${
+                location.pathname === "/" ? "w-full" : "w-0 group-hover/link:w-full"
+              }`}
+            />
           </Link>
-        ))}
 
-        {user ? (
-          <div className="flex items-center gap-3 pl-4 border-l border-white/10">
-            <span className="font-sans text-sm text-white/50">
-              {user.nome}
-            </span>
-            <button
-              onClick={handleLogout}
-              className="font-sans text-sm text-white/70 hover:text-brand transition-colors"
+          {linksDoRole.map((link) => {
+            const isAtivo = location.pathname.startsWith(link.to);
+            return (
+              <Link
+                key={link.to}
+                to={link.to}
+                className={`group/link relative transition-colors duration-200 ${
+                  isAtivo ? "text-white font-semibold" : "text-white/70 hover:text-white"
+                }`}
+              >
+                {link.label}
+                <span
+                  className={`absolute left-0 -bottom-1 h-px bg-brand transition-all duration-300 ${
+                    isAtivo ? "w-full" : "w-0 group-hover/link:w-full"
+                  }`}
+                />
+              </Link>
+            );
+          })}
+
+          {user ? (
+            <div className="flex items-center gap-8">
+              <span className="opacity-90 font-medium">{primeiroNome}</span>
+              
+              <button
+                onClick={handleLogout}
+                className="group/link relative text-white/70 hover:text-white transition-colors duration-200"
+              >
+                Sair
+                <span className="absolute left-0 -bottom-1 w-0 group-hover/link:w-full h-px bg-brand transition-all duration-300" />
+              </button>
+            </div>
+          ) : (
+            <Link
+              to="/login"
+              className="group/link relative text-white/70 hover:text-white transition-colors duration-200"
             >
-              Sair
-            </button>
-          </div>
-        ) : (
-          <Link
-            to="/login"
-            className="font-sans text-sm font-semibold bg-brand hover:bg-brand-hover text-white rounded-lg px-4 py-2 transition-colors"
-          >
-            Entrar
-          </Link>
-        )}
+              Entrar
+              <span className="absolute left-0 -bottom-1 w-0 group-hover/link:w-full h-px bg-brand transition-all duration-300" />
+            </Link>
+          )}
+        </div>
       </div>
-    </nav>
+    </header>
   );
 }

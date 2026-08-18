@@ -56,14 +56,14 @@ export default function Hero({
   }, [dropdownAberto, atualizarPosicao]);
 
   return (
-    <div className="relative min-h-95 md:min-h-105 overflow-visible bg-[#0d0e12] z-20">
+    <div className="relative min-h-95 md:min-h-105 overflow-visible bg-bg z-20">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <img
           src={imagemFundo}
           alt="Background Eventos"
           className="w-full h-full object-cover object-center transform-gpu transition-transform duration-700 ease-out hover:scale-105"
         />
-        <div className="absolute inset-0 bg-linear-to-b from-[#1a050b]/85 via-[#0f0407]/90 to-[#0d0e12]" />
+        <div className="absolute inset-0 bg-linear-to-b from-[#1a050b]/85 via-[#0f0407]/90 to-bg" />
         <div className="absolute inset-0 bg-bg/40" />
       </div>
 
@@ -119,7 +119,7 @@ export default function Hero({
                     left: dropdownPos.left,
                     width: dropdownPos.width,
                   }}
-                  className="z-[9999] bg-[#e2e8f0] border border-[#cbd5e1] rounded-2xl overflow-hidden shadow-2xl transform-gpu transition-all duration-200 animate-in fade-in slide-in-from-top-2"
+                  className="z-9999 bg-[#e2e8f0] border border-[#cbd5e1] rounded-2xl overflow-hidden shadow-2xl transform-gpu transition-all duration-200 animate-in fade-in slide-in-from-top-2"
                 >
                   {tipos.map((tipo) => (
                     <button

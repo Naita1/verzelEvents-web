@@ -1,61 +1,31 @@
-# Plataforma de Eventos e Ingressos
+# Verzel Events — Front-end
 
-Projeto desenvolvido para o desafio técnico **Elite Dev — Verzel**: uma plataforma onde organizadores publicam eventos (a partir de um catálogo externo) e clientes reservam lugares, pagam de forma simulada e recebem ingressos com QR Code, validados na portaria na entrada do evento.
+Front-end da plataforma de eventos e ingressos do desafio técnico Elite Dev (Verzel). Consome a API REST do back-end (Spring Boot) para autenticação, catálogo de eventos, reserva de assentos, pagamento simulado, emissão de ingressos com QR code e validação na portaria.
 
-## Sumário
-
-- [Stack utilizada](#stack-utilizada)
-- [Como rodar o projeto](#como-rodar-o-projeto)
-- [Credenciais de teste](#credenciais-de-teste)
-- [Estrutura do front-end](#estrutura-do-front-end)
-- [Decisões técnicas e de design](#decisões-técnicas-e-de-design)
-- [Uso de IA no desenvolvimento](#uso-de-ia-no-desenvolvimento)
-- [Limitações conhecidas](#limitações-conhecidas)
-- [Deploy](#deploy)
+> Este README documenta apenas o front-end. Para a API, veja o README do back-end.
 
 ---
 
-## Stack utilizada
+## Stack
 
-**Back-end:** Java + Spring Boot, Spring Security (JWT), PostgreSQL, integração com a API do TMDb.
-
-**Front-end:** React (JavaScript) + Vite, Tailwind CSS (via `@theme`, sem `tailwind.config.js`), React Router, Axios, `qrcode.react` (geração de QR), `html5-qrcode` (leitura de QR pela câmera).
+- **React 19** + **Vite**
+- **React Router DOM** — rotas e proteção por papel (role)
+- **Context API** — autenticação (`AuthContext`), sem libs extras de estado global
+- **Tailwind CSS 4** (via plugin `@tailwindcss/vite`, sem `tailwind.config.js`)
+- **Axios** — cliente HTTP com interceptor de token
+- **Framer Motion** — transições e animações
+- **html5-qrcode** — leitura de QR code pela câmera (tela da portaria)
+- **qrcode.react** — geração do QR code exibido no ingresso
 
 ---
 
 ## Como rodar o projeto
 
 ### Pré-requisitos
+- Node.js 18+ e npm
+- Back-end rodando em `http://localhost:8080` (veja o README do back-end)
 
-- Docker
-- Java 17+ e Maven (ou use o Maven Wrapper incluso)
-- Node.js 18+
-
-### 1. Banco de dados
-
-Na raiz do back-end, suba o PostgreSQL via Docker:
-
-```bash
-docker compose up -d
-```
-
-### 2. Back-end
-
-Ainda na raiz do back-end:
-
-```bash
-./mvnw spring-boot:run
-```
-
-*(No Windows: `mvnw.cmd spring-boot:run`)*
-
-Não é necessário criar um arquivo `.env` — as configurações de conexão com o banco e a chave da API do TMDb já estão definidas em `application.properties` para o ambiente local.
-
-A API sobe em `http://localhost:8080`.
-
-### 3. Front-end
-
-Na raiz do front-end:
+### Passos
 
 ```bash
 npm install
@@ -64,80 +34,121 @@ npm run dev
 
 A aplicação sobe em `http://localhost:5173`.
 
-### 4. Dados de teste
+### Outros scripts
 
-O `DataSeeder` já popula o banco automaticamente na subida da aplicação — não é necessário cadastrar nada manualmente para testar o fluxo completo.
-
----
-
-## Credenciais de teste
-
-Todos os usuários usam a senha **`123456`**.
-
-| Papel | Nome | E-mail |
-|---|---|---|
-| Organizador | Organizador Demo | `organizador@verzel.com` |
-| Cliente | Cliente Um | `cliente1@verzel.com` |
-| Cliente | Cliente Dois | `cliente2@verzel.com` |
-| Portaria | Portaria Demo | `portaria@verzel.com` |
-
-**Evento pré-cadastrado:** *Matrix Resurrections* — Cinema, Sala 1 (Cine Verzel), R$ 35,00, 10 assentos (`A1` a `A10`), todos livres.
+```bash
+npm run build      # build de produção
+npm run preview    # preview do build de produção
+npm run lint        # eslint
+```
 
 ---
 
-## Estrutura do front-end
+## Estrutura de pastas
 
 ```
 src/
-  components/   → peças reutilizáveis (EventCard, SeatMap, Navbar...)
-  pages/        → uma tela por rota
-  layouts/      → MainLayout (Navbar + Outlet)
-  services/     → chamadas HTTP organizadas por domínio (api, eventService, seatService...)
-  context/      → AuthContext (token, usuário, login/logout)
-  routes/       → ProtectedRoute
-  utils/        → helpers (mapeamento de imagem/cor por tipo de evento, estilo de validação)
+├── assets/       # imagens e arquivos estáticos
+├── components/   # componentes reutilizáveis
+├── context/      # AuthContext (usuário logado, token, login/logout)
+├── layouts/      # MainLayout (navbar + outlet das páginas internas)
+├── pages/        # telas da aplicação
+├── routes/       # ProtectedRoute (proteção de rotas por role)
+├── services/     # chamadas à API, um arquivo por domínio
+├── utils/        # funções auxiliares
+├── App.jsx       # definição das rotas
+└── main.jsx      # entrada da aplicação
 ```
-
-### Fluxo de telas
-
-`Login` → `Home` (busca e filtro de eventos) → `EventDetail` (mapa de assentos, seleção múltipla) → `Payment` (pagamento simulado, com expiração e recusa) → `MyTickets` (ingressos com QR) → `Portaria` (validação, câmera + digitação manual). Além de `SharedTicket` (visualização pública de um ingresso via link) e `Organizador` (criação de eventos a partir do catálogo do TMDb).
 
 ---
 
-## Decisões técnicas e de design
+## Autenticação
 
-Algumas escolhas feitas ao longo do desenvolvimento, e por quê:
+O `AuthContext` mantém o usuário logado (nome e role) e o token JWT, persistidos em `localStorage`. No carregamento da aplicação, o contexto restaura a sessão a partir do `localStorage` (com uma flag `loading` para evitar redirecionamentos precoces).
 
-- **Identidade visual escura, com tipografia condensada (Bebas Neue) e acento laranja-avermelhado** — buscando transmitir "plataforma de eventos/nightlife" em vez da estética genérica de SaaS corporativo. A tela de login usa um layout dividido (título de impacto + formulário) com glow de fundo, em vez do formulário centralizado padrão.
-- **Reserva com seleção múltipla de assentos via `Promise.allSettled`** — como o back-end reserva um assento por requisição, o front dispara todas as chamadas em paralelo e trata sucessos e falhas (ex: `409 Conflict` por concorrência) de forma independente, sem que uma falha cancele as reservas que já deram certo.
-- **Countdown de expiração da reserva no front, calculado a partir do `expiresAt`** — é só uma referência visual para o usuário; a fonte de verdade da expiração continua sendo o back-end.
-- **QR Code gerado a partir do `codigoValidacao` (`reservaId:qrHash`)** — é essa string completa que a portaria precisa ler para validar; o QR é renderizado sobre fundo branco propositalmente, para garantir contraste e leitura confiável pela câmera mesmo com o restante da interface em tema escuro.
-- **Filtros de evento calculados em memória no front** — como o `GET /eventos` já retorna a lista completa com todos os campos necessários, filtrar localmente evita idas e vindas à API a cada tecla digitada na busca.
-- **Links de navegação da Navbar condicionais por `role`** — o usuário só vê o que pode acessar; isso é só a camada de UX, a proteção de fato é feita pelo `ProtectedRoute` (que redireciona para `/login` se não autenticado, ou para a Home se o papel não bate) e pelo próprio back-end.
-- **QR Code funcional também na página pública de compartilhamento (`SharedTicket`)** — o link gerado mostra um QR real e válido. Isso é aceitável no escopo do desafio (que pede apenas a possibilidade de compartilhar via link), mas fica registrado como ponto de atenção: em um cenário de produção, valeria restringir a visualização do QR para convidados sem conta, mantendo a validação no portão baseada no hash assinado (que já impede a forja do código).
+O `api.js` centraliza a instância do Axios: injeta o header `Authorization: Bearer <token>` em toda requisição autenticada, e normaliza erros da API (`message`/`error`/status) num formato único para tratamento consistente nas telas.
+
+Rotas restritas por papel são protegidas pelo componente `ProtectedRoute`, que recebe as roles permitidas e redireciona usuários sem permissão ou não autenticados.
+
+---
+
+## Rotas
+
+| Rota | Página | Acesso |
+|---|---|---|
+| `/login` | Login | Público |
+| `/` | Home (lista de eventos) | Público |
+| `/eventos/:id` | Detalhe do evento e mapa de assentos | Público |
+| `/ingressos/compartilhado/:token` | Ingresso compartilhado | Público |
+| `/pagamento` | Pagamento simulado | CLIENTE |
+| `/meus-ingressos` | Meus ingressos | CLIENTE |
+| `/portaria` | Validação de ingressos | PORTARIA |
+| `/organizador` | Painel do organizador (catálogo TMDb + meus eventos) | ORGANIZADOR |
+| `/organizador/staff/novo` | Criação de conta de staff (organizador/portaria) | ORGANIZADOR |
+
+Todas as rotas exceto `/login` são renderizadas dentro do `MainLayout`, que traz a navbar com links condicionais por role.
+
+---
+
+## Páginas
+
+- **Login** — login e cadastro de cliente na mesma tela, com abas animadas (Framer Motion) e layout dividido (branding de um lado, formulário do outro)
+- **Home** — hero com busca e filtro por tipo, vitrine de destaque (`FeaturedShowcase`) e grid de eventos (`EventCard`), com fade-in escalonado nos cards
+- **EventDetail** — pôster do evento, mapa de assentos com layout gerado dinamicamente a partir da capacidade (`gerarLayoutDinamico`), seleção múltipla e barra fixa de resumo/confirmação
+- **Payment** — dados do cartão simulado, com contagem regressiva do tempo restante da reserva (expulsa o cliente para a Home se o tempo expirar) e tratamento de sucesso/falha parcial no pagamento
+- **MyTickets** — grid de e-tickets do cliente, cada um com QR code (`qrcode.react`) e botão para copiar o link de compartilhamento
+- **SharedTicket** — visualização pública de um ingresso por link, sem necessidade de login
+- **Organizador** — busca no catálogo TMDb, formulário de criação de evento e listagem dos eventos publicados
+- **Portaria** — validação de ingresso por código manual ou por leitura de QR com a câmera (`html5-qrcode`), com histórico de validações do evento selecionado
+- **CreateStaff** — formulário para o organizador criar contas de PORTARIA ou ORGANIZADOR, com seleção visual do tipo de conta
+
+---
+
+## Camada de serviços (`services/`)
+
+Cada arquivo em `services/` isola as chamadas de um domínio da API, todas passando pela instância central `api.js`:
+
+- **api.js** — instância do Axios com interceptor de autenticação e tratamento de erro
+- **eventService.js** — listagem de eventos (`GET /eventos`)
+- **seatService.js** — assentos de um evento e criação de reserva, com `idempotencyKey` gerada via `crypto.randomUUID()` para evitar reservas duplicadas
+- **paymentService.js** — pagamento de uma reserva
+- **ticketService.js** — ingressos do cliente logado e ingresso compartilhado por token
+- **organizadorService.js** — busca no catálogo TMDb, criação e listagem de eventos do organizador
+- **portariaService.js** — validação de ingresso e histórico de validações
+- **staffService.js** — criação de contas de PORTARIA/ORGANIZADOR
+
+---
+
+## Decisões técnicas
+
+**Idempotência na reserva de assento**
+`seatService.reservarAssento` gera uma `idempotencyKey` via `crypto.randomUUID()` a cada tentativa de reserva, evitando que um duplo clique ou retry de rede crie reservas duplicadas para o mesmo cliente — o back-end usa essa chave para retornar a reserva já existente em vez de criar uma nova.
+
+**Sessão persistida em `localStorage`, não em cookie**
+Como a API é *stateless* (JWT) e consumida de um front separado, optei por guardar token/nome/role em `localStorage` e restaurá-los no carregamento da aplicação, evitando exigir login a cada refresh de página.
+
+**Leitura de QR code pela câmera na tela da portaria**
+Além da validação manual por código, a tela de portaria usa `html5-qrcode` para ler o QR do ingresso diretamente pela câmera do dispositivo, agilizando a entrada de clientes no evento.
+
+**Tratamento de erro centralizado no Axios**
+O interceptor de resposta do `api.js` normaliza a mensagem de erro (vinda de `message` ou `error` no corpo da resposta) num formato único, para que as telas não precisem tratar o formato de erro do back-end individualmente.
+
+**Mapa de assentos com layout gerado dinamicamente**
+Em vez de um layout fixo, `EventDetail` calcula o número de fileiras a partir da capacidade do evento (10 assentos por fileira, com corredor central), permitindo que o mapa se adapte a eventos de qualquer tamanho sem precisar de configuração manual por evento.
+
+**Contagem regressiva do tempo de reserva na tela de pagamento**
+A tela de `Payment` calcula o tempo restante até a reserva mais próxima de expirar e atualiza a cada segundo; se o tempo chega a zero, o cliente é redirecionado de volta para a Home, evitando tentativas de pagamento sobre uma reserva já expirada no back-end.
+
+---
 
 ## Uso de IA no desenvolvimento
 
-Utilizei IA (Claude) como par de desenvolvimento ao longo da construção do front-end, principalmente para:
+Usei IA para auxiliar na construção do projeto — principalmente em configuração de ferramental (Vite, Tailwind), depuração de erros e em partes específicas onde eu tinha menos domínio prévio — e não para gerar o projeto como um todo. As decisões de fluxo, estrutura de telas e o design visual foram feitos por mim.
 
-- Estruturar decisões de arquitetura (organização de pastas, camada de serviços, `AuthContext`, `ProtectedRoute`) e discutir trade-offs antes de implementar.
-- Auxílio em configurações que eu tinha menos domínio no momento, como alguns ajustes de Docker e a configuração inicial do Tailwind na versão mais recente.
-- Apoio na padronização visual (paleta, tipografia, componentes) a partir de referências visuais que eu levantei antes de começar.
-
-As decisões de produto, os ajustes finos no back-end (como a correção da geração/validação do hash do QR na portaria), os testes de cada fluxo e a validação de que tudo funcionava de ponta a ponta com o back-end real foram feitos por mim, testando manualmente cada etapa (inclusive cenários de concorrência, como duas reservas simultâneas para o mesmo assento).
+---
 
 ## Limitações conhecidas
 
-- O `CreateEventRequest` não possui campo de imagem, então eventos criados pelo organizador usam uma imagem padrão por tipo (Cinema/Show/Teatro) na listagem, mesmo quando um filme com pôster foi selecionado do catálogo do TMDb na criação.
-- Não há endpoint de cancelamento de evento no back-end atual, então essa funcionalidade opcional não foi implementada.
-- O painel do organizador lista os eventos criados, mas não oferece edição após a publicação.
-
-## Deploy
-
-A aplicação foi testada e validada localmente (fluxo garantido de ponta a ponta). O deploy está planejado da seguinte forma:
-
-- **Front-end:** Vercel
-- **Back-end:** Render
-- **Banco de dados:** Neon (PostgreSQL)
-
-*Se o deploy for concluído antes do envio final, os links públicos serão adicionados aqui.*
+- O cadastro de novo cliente (aba "Cadastro" na tela de Login) está incompleto: o `AuthContext` ainda não implementa a função `register` que consome `POST /auth/register`, então o cadastro pelo front não cria a conta de fato. O login de usuários já existentes (seed) funciona normalmente.
+- Testes automatizados não implementados devido ao prazo do desafio.
+- Sessão em `localStorage` (sem refresh token): o usuário precisa logar novamente após o JWT expirar.

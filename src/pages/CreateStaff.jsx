@@ -91,9 +91,6 @@ export default function CreateStaff() {
       
 
         <div className="mb-6">
-          <span className="font-sans text-[11px] font-bold text-brand uppercase tracking-[0.2em] block mb-1">
-            The Stage Is Yours
-          </span>
           <h1 className="font-display text-3xl text-white tracking-wide uppercase">
             Nova conta de equipe
           </h1>

@@ -23,7 +23,6 @@ export default function Navbar() {
   const linksDoRole = user?.role ? LINKS_POR_ROLE[user.role] || [] : [];
   const primeiroNome = user?.nome ? user.nome.trim().split(" ")[0] : "";
 
-  // Normaliza o caminho atual removendo a barra final para evitar divergências ex: "/organizador/" vs "/organizador"
   const currentPath = location.pathname.endsWith("/") && location.pathname !== "/"
     ? location.pathname.slice(0, -1)
     : location.pathname;
@@ -39,7 +38,6 @@ export default function Navbar() {
 
         <div className="flex items-center gap-8 text-white font-sans text-xs md:text-sm tracking-wide">
           
-          {/* Link público 'Eventos' */}
           <Link
             to="/"
             className={`group/link relative transition-colors duration-200 ${
@@ -54,7 +52,6 @@ export default function Navbar() {
             />
           </Link>
 
-          {/* Links do perfil (ORGANIZADOR, PORTARIA, etc.) */}
           {linksDoRole.map((link) => {
             const linkPath = link.to.endsWith("/") && link.to !== "/" ? link.to.slice(0, -1) : link.to;
             const isAtivo = currentPath === linkPath;

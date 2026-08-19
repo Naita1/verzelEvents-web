@@ -1,69 +1,83 @@
 import { useNavigate } from "react-router-dom";
-import { imagemDoEvento, corBadgeDoEvento } from "../utils/eventVisuals";
 import { usePosterEvento } from "../utils/usePosterEvento";
+import { corBadgeDoEvento } from "../utils/eventVisuals";
+
+function formatarPreco(valor) {
+  const num = Number(valor);
+  if (isNaN(num) || num <= 0) return null;
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(num);
+}
 
 export default function EventCard({ evento }) {
   const navigate = useNavigate();
-  const { imageUrl, imgLoading, imgReady, marcarPronto } = usePosterEvento(evento);
+  const { imageUrl, imgLoading, imgReady, marcarPronto, marcarErro } =
+    usePosterEvento(evento);
 
-  const data = new Date(evento.dataHora);
-  const dataFormatada = data.toLocaleDateString("pt-BR", {
-    day: "2-digit",
-    month: "short",
-  });
-  const horaFormatada = data.toLocaleTimeString("pt-BR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-  const imagemExibida = imageUrl || imagemDoEvento(evento.tipo);
+  const precoFormatado = formatarPreco(
+    evento?.preco || evento?.valorIngresso || evento?.valor
+  );
 
   return (
     <button
+      type="button"
       onClick={() => navigate(`/eventos/${evento.id}`)}
-      className="group h-full flex flex-col text-left bg-surface border border-white/10 rounded-2xl overflow-hidden hover:border-brand/50 transition-colors"
+      className="group w-full text-left rounded-2xl overflow-hidden bg-[#2a0e16]/90 border border-white/10 shadow-lg hover:shadow-2xl hover:shadow-black/40 hover:-translate-y-1 transition-all duration-300 ease-out"
     >
-      <div className="relative aspect-3/2 shrink-0 overflow-hidden bg-zinc-900">
+      <div className="relative aspect-2/3 w-full bg-[#18080c] overflow-hidden">
         {imgLoading && (
           <div className="absolute inset-0 animate-pulse bg-linear-to-br from-zinc-800 to-zinc-900" />
         )}
 
-        {!imgLoading && (
+        {!imgLoading && imageUrl && (
           <img
-            src={imagemExibida}
-            alt={evento.titulo}
+            src={imageUrl}
+            alt={evento?.titulo || "Evento"}
             onLoad={marcarPronto}
-            className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-300 ${
+            onError={marcarErro}
+            className={`w-full h-full object-cover object-center transform-gpu transition-all duration-500 ease-out group-hover:scale-105 ${
               imgReady ? "opacity-100" : "opacity-0"
             }`}
           />
         )}
 
+        {!imgLoading && !imageUrl && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-white/40 p-4">
+            <span className="w-10 h-10 rounded-full bg-[#a11b3e]/20 border border-[#a11b3e] flex items-center justify-center">
+              <span className="text-sm font-bold text-[#a11b3e]">
+                {evento?.titulo ? evento.titulo.charAt(0).toUpperCase() : "E"}
+              </span>
+            </span>
+            <span className="font-sans text-[10px] text-center uppercase tracking-widest">
+              Sem imagem
+            </span>
+          </div>
+        )}
+
         <span
           className={`absolute top-3 left-3 ${corBadgeDoEvento(
-            evento.tipo
-          )} text-white text-xs font-sans font-semibold px-2 py-1 rounded-md uppercase tracking-wide`}
+            evento?.tipo
+          )} text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full shadow-md backdrop-blur-sm`}
         >
-          {evento.tipo}
+          {evento?.tipo || "Evento"}
         </span>
+
+        {precoFormatado && (
+          <span className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-emerald-400 text-[11px] font-semibold px-2.5 py-1 rounded-full">
+            {precoFormatado}
+          </span>
+        )}
       </div>
 
-      <div className="p-4 flex flex-col flex-1">
-        <h3 className="font-display text-2xl tracking-wide text-white leading-tight line-clamp-2">
-          {evento.titulo}
+      <div className="p-3.5">
+        <h3 className="font-display text-sm text-white uppercase tracking-wide leading-snug line-clamp-2 mb-1">
+          {evento?.titulo || "Evento sem título"}
         </h3>
-        <p className="font-sans text-white/50 text-sm mt-1 truncate">
-          {evento.local}
+        <p className="font-sans text-[11px] text-white/50 truncate">
+          📍 {evento?.local || "Local a confirmar"}
         </p>
-
-        <div className="flex items-center justify-between gap-2 mt-auto pt-4">
-          <span className="font-sans text-white/70 text-sm whitespace-nowrap">
-            {dataFormatada} · {horaFormatada}
-          </span>
-          <span className="font-display text-xl text-brand whitespace-nowrap">
-            R$ {evento.preco.toFixed(2)}
-          </span>
-        </div>
       </div>
     </button>
   );

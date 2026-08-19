@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, memo } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import { usePosterEvento } from "../utils/usePosterEvento";
@@ -37,7 +37,7 @@ function formatarPreco(valor) {
   }).format(num);
 }
 
-export default function FeaturedShowcase({ eventos, loading }) {
+function FeaturedShowcase({ eventos, loading }) {
   const [indice, setIndice] = useState(0);
   const [direction, setDirection] = useState(1);
   const [isPaused, setIsPaused] = useState(false);
@@ -212,6 +212,8 @@ export default function FeaturedShowcase({ eventos, loading }) {
                       <img
                         src={imageUrl}
                         alt={currentEvent?.titulo || "Pôster do evento"}
+                        decoding="async"
+                        fetchPriority={indice === 0 ? "high" : "auto"}
                         onLoad={marcarPronto}
                         onError={marcarErro}
                         className={`w-full h-full object-cover object-center transform-gpu transition-all duration-500 ease-out group-hover:scale-105 ${
@@ -254,3 +256,5 @@ export default function FeaturedShowcase({ eventos, loading }) {
     </div>
   );
 }
+
+export default memo(FeaturedShowcase);

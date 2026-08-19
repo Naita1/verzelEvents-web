@@ -1,5 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
-import { motion } from "framer-motion";
+import { useEffect, useState, useMemo, useDeferredValue } from "react";
 import { listarEventos } from "../services/eventService";
 import Hero from "../components/Hero";
 import FeaturedShowcase from "../components/FeaturedShowcase";
@@ -25,15 +24,18 @@ export default function Home() {
     return ["TODOS", ...unicos];
   }, [eventos]);
 
+  const buscaDeferida = useDeferredValue(busca);
+
   const eventosFiltrados = useMemo(() => {
+    const buscaLower = buscaDeferida.toLowerCase();
     return eventos.filter((evento) => {
       const combinaBusca =
-        evento.titulo.toLowerCase().includes(busca.toLowerCase()) ||
-        evento.local.toLowerCase().includes(busca.toLowerCase());
+        evento.titulo.toLowerCase().includes(buscaLower) ||
+        evento.local.toLowerCase().includes(buscaLower);
       const combinaTipo = tipoFiltro === "TODOS" || evento.tipo === tipoFiltro;
       return combinaBusca && combinaTipo;
     });
-  }, [eventos, busca, tipoFiltro]);
+  }, [eventos, buscaDeferida, tipoFiltro]);
 
   return (
     <div className="min-h-screen bg-bg">
@@ -86,14 +88,16 @@ export default function Home() {
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-5">
             {eventosFiltrados.map((evento, index) => (
-              <motion.div
+              <div
                 key={evento.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: Math.min(index * 0.05, 0.3) }}
+                className="animate-in fade-in slide-in-from-bottom-4 fill-mode-both"
+                style={{
+                  animationDelay: `${Math.min(index * 40, 240)}ms`,
+                  animationDuration: "300ms",
+                }}
               >
                 <EventCard evento={evento} />
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>

@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { useNavigate } from "react-router-dom";
 import { usePosterEvento } from "../utils/usePosterEvento";
 import { corBadgeDoEvento } from "../utils/eventVisuals";
@@ -11,7 +12,7 @@ function formatarPreco(valor) {
   }).format(num);
 }
 
-export default function EventCard({ evento }) {
+function EventCard({ evento }) {
   const navigate = useNavigate();
   const { imageUrl, imgLoading, imgReady, marcarPronto, marcarErro } =
     usePosterEvento(evento);
@@ -35,6 +36,8 @@ export default function EventCard({ evento }) {
           <img
             src={imageUrl}
             alt={evento?.titulo || "Evento"}
+            loading="lazy"
+            decoding="async"
             onLoad={marcarPronto}
             onError={marcarErro}
             className={`w-full h-full object-cover object-center transform-gpu transition-all duration-500 ease-out group-hover:scale-105 ${
@@ -82,3 +85,5 @@ export default function EventCard({ evento }) {
     </button>
   );
 }
+
+export default memo(EventCard);

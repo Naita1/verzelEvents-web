@@ -14,5 +14,5 @@ export async function criarEvento(dados) {
 
 export async function listarMeusEventos() {
   const response = await api.get("/organizador/eventos");
-  return response.data;
+  return response.data.content;
 }

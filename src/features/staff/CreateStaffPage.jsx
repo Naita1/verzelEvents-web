@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { createStaff } from "../services/staffService";
-import backgroundImg from "../assets/background2.jpg";
+import { createStaff } from "./api";
+import backgroundImg from "../../assets/background2.jpg";
 
 const ROLES = [
   {
@@ -17,7 +17,7 @@ const ROLES = [
   },
 ];
 
-export default function CreateStaff() {
+export default function CreateStaffPage() {
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");

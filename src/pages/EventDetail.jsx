@@ -1,7 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useEffect, useState, useMemo, useCallback } from "react";
-import api from "../services/api";
-import { listarAssentos, reservarAssento } from "../services/seatService";
+import { useState, useMemo, useCallback } from "react";
+import { useEventDetail } from "../features/events/hooks/useEventDetail";
 import { usePosterEvento } from "../utils/usePosterEvento";
 import SeatMap from "../components/SeatMap";
 
@@ -29,29 +28,20 @@ export default function EventDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [evento, setEvento] = useState(null);
-  const [assentos, setAssentos] = useState([]);
   const [selecionados, setSelecionados] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [erro, setErro] = useState(null);
-  const [confirmando, setConfirmando] = useState(false);
   const [resultadoParcial, setResultadoParcial] = useState(null);
+  const {
+    evento,
+    assentos,
+    isLoading: loading,
+    error,
+    reservarMutation,
+  } = useEventDetail(id);
+  const erro = error?.message;
+  const confirmando = reservarMutation.isPending;
 
   const { imageUrl, imgLoading, imgReady, marcarPronto, marcarErro } =
     usePosterEvento(evento);
-
-  useEffect(() => {
-    Promise.all([
-      api.get(`/eventos/${id}`),
-      listarAssentos(id),
-    ])
-      .then(([eventoRes, assentosData]) => {
-        setEvento(eventoRes.data);
-        setAssentos(assentosData || []);
-      })
-      .catch((err) => setErro(err.message))
-      .finally(() => setLoading(false));
-  }, [id]);
 
   const limiteLiberado = useMemo(() => {
     return evento?.quantidadeIngressos || evento?.capacidade || assentos.length;
@@ -108,9 +98,10 @@ export default function EventDetail() {
     setResultadoParcial(null);
 
     try {
-      const resultados = await Promise.allSettled(
-        selecionados.map((assentoId) => reservarAssento(id, assentoId))
-      );
+      const { resultados } = await reservarMutation.mutateAsync({
+        eventoId: id,
+        assentoIds: selecionados,
+      });
 
       const sucesso = [];
       const falha = [];
@@ -127,16 +118,6 @@ export default function EventDetail() {
         }
       });
 
-      if (sucesso.length > 0) {
-        setAssentos((prev) =>
-          prev.map((a) =>
-            sucesso.some((s) => s.assentoId === a.id)
-              ? { ...a, status: "RESERVADO" }
-              : a
-          )
-        );
-      }
-
       if (falha.length === 0 && sucesso.length > 0) {
         setSelecionados([]);
         navigate("/pagamento", {
@@ -149,8 +130,15 @@ export default function EventDetail() {
         setResultadoParcial({ sucesso, falha });
         setSelecionados(falha.map((f) => f.assentoId));
       }
-    } catch {
-      setErro("Ocorreu um erro ao processar a reserva.");
+    } catch (err) {
+      setResultadoParcial({
+        sucesso: [],
+        falha: selecionados.map((assentoId) => ({
+          assentoId,
+          codigo: assentos.find((a) => a.id === assentoId)?.codigo || assentoId,
+          erro: err.message || "Erro na reserva",
+        })),
+      });
     } finally {
       setConfirmando(false);
     }

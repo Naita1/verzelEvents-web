@@ -52,7 +52,7 @@ function FeaturedShowcase({ eventos, loading }) {
   const proximo = useCallback(() => {
     setDirection(1);
     setIndice((i) => (i + 1) % eventos.length);
-  }, [eventos?.length]);
+  }, [eventos]);
 
   function anterior() {
     setDirection(-1);
@@ -96,6 +96,7 @@ function FeaturedShowcase({ eventos, loading }) {
     <div className="relative max-w-5xl mx-auto px-6 z-20 overflow-visible">
       <div
         role="region"
+        aria-roledescription="carousel"
         aria-label="Destaques em cartaz"
         tabIndex={0}
         onKeyDown={handleKeyDown}
@@ -103,14 +104,14 @@ function FeaturedShowcase({ eventos, loading }) {
         onMouseLeave={() => setIsPaused(false)}
         onFocus={() => setIsPaused(true)}
         onBlur={() => setIsPaused(false)}
-        className="relative w-full bg-[#2d0a14]/85 backdrop-blur-md border border-white/10 rounded-2xl shadow-2xl shadow-black/60 min-h-95 p-6 sm:p-8 md:p-10 md:px-14 outline-none focus-visible:ring-2 focus-visible:ring-brand/50 card-ticket-mask"
+        className="relative w-full bg-[#18050a]/85 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl shadow-black/80 min-h-95 p-6 sm:p-8 md:p-10 md:px-14 outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-black card-ticket-mask"
       >
         {temEventos && eventos.length > 1 && (
           <>
             <button
               onClick={anterior}
               aria-label="Evento anterior"
-              className="absolute -left-5 md:-left-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#cbd5e1] hover:bg-white text-zinc-900 flex items-center justify-center transition-all duration-200 active:scale-95 shadow-xl hover:scale-105"
+              className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/60 hover:bg-black/85 text-white/90 hover:text-white border border-white/15 backdrop-blur-md flex items-center justify-center transition-all duration-200 active:scale-95 shadow-xl hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             >
               <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                 <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
@@ -120,7 +121,7 @@ function FeaturedShowcase({ eventos, loading }) {
             <button
               onClick={proximo}
               aria-label="Próximo evento"
-              className="absolute -right-5 md:-right-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#cbd5e1] hover:bg-white text-zinc-900 flex items-center justify-center transition-all duration-200 active:scale-95 shadow-xl hover:scale-105"
+              className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/60 hover:bg-black/85 text-white/90 hover:text-white border border-white/15 backdrop-blur-md flex items-center justify-center transition-all duration-200 active:scale-95 shadow-xl hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             >
               <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
                 <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
@@ -149,6 +150,9 @@ function FeaturedShowcase({ eventos, loading }) {
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={currentEvent.id || indice}
+                role="group"
+                aria-roledescription="slide"
+                aria-label={`${indice + 1} de ${eventos.length}: ${currentEvent.titulo || "Evento"}`}
                 custom={direction}
                 variants={slideVariants}
                 initial="initial"
@@ -159,7 +163,7 @@ function FeaturedShowcase({ eventos, loading }) {
               >
                 <div className="flex-1 flex flex-col justify-center my-auto py-1 min-w-0">
                   <div className="flex items-center gap-2 mb-3">
-                    <span className="font-sans text-[11px] font-bold text-brand bg-brand/10 border border-brand/20 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                    <span className="font-sans text-[11px] font-bold text-brand bg-brand/15 border border-brand/30 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
                       {currentEvent.tipo || "Evento"}
                     </span>
                     {precoFormatado && (
@@ -169,7 +173,7 @@ function FeaturedShowcase({ eventos, loading }) {
                     )}
                   </div>
 
-                  <h2 className="font-display text-3xl md:text-5xl text-white uppercase tracking-wide leading-[1.05] mb-2 line-clamp-2">
+                  <h2 className="font-display text-3xl md:text-5xl text-white uppercase tracking-wide leading-[1.08] mb-2 line-clamp-2">
                     {currentEvent.titulo || "Evento sem título"}
                   </h2>
 
@@ -187,17 +191,18 @@ function FeaturedShowcase({ eventos, loading }) {
                     )}
                   </div>
 
-                  <p className="font-sans text-xs md:text-sm text-white/60 line-clamp-2 leading-relaxed mb-6">
+                  <p className="font-sans text-xs md:text-sm text-white/65 line-clamp-2 leading-relaxed mb-6">
                     {currentEvent.descricao ||
                       "Garanta seu ingresso antecipado para este evento exclusivo. Vagas limitadas!"}
                   </p>
 
                   <div className="flex items-center gap-4">
                     <button
+                      type="button"
                       onClick={() => navigate(`/eventos/${currentEvent.id}`)}
-                      className="font-sans font-semibold text-xs uppercase tracking-wider bg-[#e2e8f0] text-[#1e293b] hover:bg-[#581c25] hover:text-white rounded-full px-8 py-3 transition-colors duration-300 ease-in-out active:scale-95 shadow-md hover:shadow-lg hover:shadow-[#581c25]/30"
+                      className="font-sans font-semibold text-xs uppercase tracking-wider bg-brand hover:bg-brand-hover text-white rounded-full px-8 py-3 transition-all duration-300 ease-in-out active:scale-95 shadow-lg shadow-brand/25 hover:shadow-brand/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
                     >
-                      Comprar
+                      Garantir Ingresso
                     </button>
                   </div>
                 </div>
@@ -237,18 +242,24 @@ function FeaturedShowcase({ eventos, loading }) {
         )}
 
         {temEventos && eventos.length > 1 && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-30">
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1 z-30">
             {eventos.map((_, i) => (
               <button
                 key={i}
+                type="button"
                 onClick={() => irPara(i)}
                 aria-label={`Ir para destaque ${i + 1}`}
-                className={`h-1.5 rounded-full transition-all duration-300 ${
-                  i === indice
-                    ? "w-6 bg-brand"
-                    : "w-1.5 bg-white/25 hover:bg-white/50"
-                }`}
-              />
+                aria-current={i === indice ? "true" : "false"}
+                className="p-2 group focus-visible:outline-none"
+              >
+                <span
+                  className={`block h-1.5 rounded-full transition-all duration-300 ${
+                    i === indice
+                      ? "w-6 bg-brand shadow-sm shadow-brand/50"
+                      : "w-2 bg-white/30 group-hover:bg-white/60"
+                  }`}
+                />
+              </button>
             ))}
           </div>
         )}

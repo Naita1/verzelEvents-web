@@ -23,6 +23,12 @@ export default function Navbar() {
   const location = useLocation();
   const [menuAberto, setMenuAberto] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [prevPathname, setPrevPathname] = useState(location.pathname);
+
+  if (prevPathname !== location.pathname) {
+    setPrevPathname(location.pathname);
+    setMenuAberto(false);
+  }
 
   useEffect(() => {
     function handleScroll() {
@@ -31,10 +37,6 @@ export default function Navbar() {
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  useEffect(() => {
-    setMenuAberto(false);
-  }, [location.pathname]);
 
   function handleLogout() {
     setMenuAberto(false);

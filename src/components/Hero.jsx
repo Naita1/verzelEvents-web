@@ -19,6 +19,10 @@ export default function Hero({
     setDropdownAberto(false);
   }
 
+  function limparBusca() {
+    setBusca("");
+  }
+
   useEffect(() => {
     if (!dropdownAberto) return;
 
@@ -28,9 +32,18 @@ export default function Hero({
       }
     }
 
+    function handleKeyDown(e) {
+      if (e.key === "Escape") {
+        setDropdownAberto(false);
+      }
+    }
+
     document.addEventListener("mousedown", handleCliqueFora);
+    document.addEventListener("keydown", handleKeyDown);
+
     return () => {
       document.removeEventListener("mousedown", handleCliqueFora);
+      document.removeEventListener("keydown", handleKeyDown);
     };
   }, [dropdownAberto]);
 
@@ -38,57 +51,97 @@ export default function Hero({
     <div className="relative max-w-6xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between gap-8 z-20">
       <div className="w-full md:max-w-lg">
         <span className="font-sans text-xs font-bold text-[#e2e8f0] uppercase tracking-[0.2em] block mb-3 opacity-90">
-          Encontre seu próximo evento
+          Descubra experiências únicas
         </span>
         <h1 className="font-display text-4xl md:text-5xl lg:text-6xl text-white uppercase tracking-wide leading-[1.05]">
           O que você <br /> quer viver hoje?
         </h1>
       </div>
 
-      <div className="relative z-30 w-full md:w-85 flex flex-col gap-3.5">
-        <div className="flex items-center bg-[#e2e8f0] border border-white/20 rounded-full pl-5 pr-1.5 py-1.5 shadow-xl transition-all duration-200 hover:bg-[#edf2f7]">
+      <div className="relative z-30 w-full md:w-96 flex flex-col gap-3.5">
+        {/* Campo de Busca com Glassmorphism */}
+        <div className="flex items-center bg-[#18050a]/80 hover:bg-[#20070e]/90 backdrop-blur-xl border border-white/15 focus-within:border-brand/70 focus-within:ring-2 focus-within:ring-brand/30 rounded-full pl-5 pr-2 py-2 shadow-2xl transition-all duration-200">
+          <span className="text-white/40 mr-2.5 shrink-0" aria-hidden="true">
+            <svg className="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
+              <circle cx="11" cy="11" r="8" />
+              <path strokeLinecap="round" d="m21 21-4.35-4.35" />
+            </svg>
+          </span>
+
+          <label htmlFor="busca-eventos" className="sr-only">
+            Buscar por evento ou local
+          </label>
           <input
+            id="busca-eventos"
             type="text"
             value={busca}
             onChange={(e) => setBusca(e.target.value)}
             placeholder="Buscar por evento ou local..."
-            className="flex-1 bg-transparent font-sans text-sm text-[#1e293b] placeholder-[#64748b] outline-none min-w-0"
+            className="flex-1 bg-transparent font-sans text-sm text-white placeholder-white/40 outline-none min-w-0"
           />
-          <button
-            type="button"
-            aria-label="Buscar"
-            className="w-9 h-9 shrink-0 flex items-center justify-center rounded-full bg-[#581c25] hover:bg-[#43121a] text-white font-bold transition-transform duration-200 active:scale-95 shadow-md"
-          >
-            →
-          </button>
+
+          {busca && (
+            <button
+              type="button"
+              onClick={limparBusca}
+              aria-label="Limpar campo de busca"
+              className="w-7 h-7 shrink-0 flex items-center justify-center rounded-full text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+            >
+              ✕
+            </button>
+          )}
         </div>
 
+        {/* Dropdown de Filtro Acessível */}
         <div className="relative" ref={filtroRef}>
           <button
             type="button"
             onClick={alternarDropdown}
-            className="w-full flex items-center justify-between bg-[#e2e8f0] hover:bg-[#edf2f7] border border-white/20 rounded-full px-5 py-3 font-sans text-sm text-[#1e293b] font-medium shadow-xl transition-all duration-200 active:scale-[0.99]"
+            aria-haspopup="listbox"
+            aria-expanded={dropdownAberto}
+            aria-label={`Filtrar por categoria: ${tipoFiltro === "TODOS" ? "Todos os tipos" : tipoFiltro}`}
+            className="w-full flex items-center justify-between bg-[#18050a]/80 hover:bg-[#20070e]/90 backdrop-blur-xl border border-white/15 hover:border-white/25 rounded-full px-5 py-3 font-sans text-sm text-white/90 font-medium shadow-2xl transition-all duration-200 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
           >
-            <span>{tipoFiltro === "TODOS" ? "Todos" : tipoFiltro}</span>
-            <span
-              className={`text-[#581c25] text-xs font-bold transition-transform duration-300 ease-in-out ${
+            <span className="flex items-center gap-2">
+              <span className="text-white/40 text-xs font-semibold uppercase tracking-wider">Tipo:</span>
+              <span className="text-white font-semibold">{tipoFiltro === "TODOS" ? "Todos" : tipoFiltro}</span>
+            </span>
+            <svg
+              className={`w-4 h-4 text-brand transition-transform duration-300 ease-in-out ${
                 dropdownAberto ? "rotate-180" : ""
               }`}
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2.5}
             >
-              ▼
-            </span>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </svg>
           </button>
 
           {dropdownAberto && (
-            <div className="absolute top-full left-0 w-full mt-2 z-50 bg-[#e2e8f0] border border-[#cbd5e1] rounded-2xl overflow-hidden shadow-2xl transform-gpu transition-all duration-200 animate-in fade-in slide-in-from-top-2">
+            <div
+              role="listbox"
+              aria-label="Selecione um tipo de evento"
+              className="absolute top-full left-0 w-full mt-2 z-50 bg-[#150409]/95 backdrop-blur-2xl border border-white/15 rounded-2xl overflow-hidden shadow-2xl shadow-black/80 py-1 animate-in fade-in slide-in-from-top-2 duration-200"
+            >
               {tipos.map((tipo) => (
                 <button
                   key={tipo}
                   type="button"
+                  role="option"
+                  aria-selected={tipoFiltro === tipo}
                   onClick={() => selecionarTipo(tipo)}
-                  className="w-full text-left px-5 py-3 font-sans text-sm text-[#334155] font-medium hover:bg-[#581c25] hover:text-white transition-colors duration-150"
+                  className={`w-full text-left px-5 py-3 font-sans text-sm font-medium flex items-center justify-between transition-colors duration-150 focus-visible:outline-none focus-visible:bg-white/10 ${
+                    tipoFiltro === tipo
+                      ? "bg-brand/20 text-white font-semibold"
+                      : "text-white/70 hover:bg-white/10 hover:text-white"
+                  }`}
                 >
                   {tipo === "TODOS" ? "Todos" : tipo}
+                  {tipoFiltro === tipo && (
+                    <span className="w-2 h-2 rounded-full bg-brand" aria-hidden="true" />
+                  )}
                 </button>
               ))}
             </div>

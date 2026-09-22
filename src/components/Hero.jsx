@@ -59,7 +59,6 @@ export default function Hero({
       </div>
 
       <div className="relative z-30 w-full md:w-96 flex flex-col gap-3.5">
-        {/* Campo de Busca com Glassmorphism */}
         <div className="flex items-center bg-[#18050a]/80 hover:bg-[#20070e]/90 backdrop-blur-xl border border-white/15 focus-within:border-brand/70 focus-within:ring-2 focus-within:ring-brand/30 rounded-full pl-5 pr-2 py-2 shadow-2xl transition-all duration-200">
           <span className="text-white/40 mr-2.5 shrink-0" aria-hidden="true">
             <svg className="w-4 h-4 fill-none stroke-current stroke-2" viewBox="0 0 24 24">
@@ -92,7 +91,6 @@ export default function Hero({
           )}
         </div>
 
-        {/* Dropdown de Filtro Acessível */}
         <div className="relative" ref={filtroRef}>
           <button
             type="button"

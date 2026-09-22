@@ -95,13 +95,11 @@ function RowsAisle({ assentos, selecionados, onToggle, layout, limiteAtingido })
   const { rowLabels, groupSizes } = layout;
   const porFileira = groupSizes.reduce((a, b) => a + b, 0);
 
-  let cursor = 0;
-
   return (
     <div className="py-4 space-y-2.5 overflow-x-auto flex flex-col items-center">
-      {rowLabels.map((rowLabel) => {
+      {rowLabels.map((rowLabel, rowIndex) => {
+        const cursor = rowIndex * porFileira;
         const assentosDaFileira = assentos.slice(cursor, cursor + porFileira);
-        cursor += porFileira;
 
         let posicaoNaFileira = 0;
 

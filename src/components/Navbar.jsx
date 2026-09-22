@@ -71,7 +71,6 @@ export default function Navbar() {
           <span className="text-xs md:text-sm font-semibold tracking-[0.2em] pl-6 text-brand">IS YOURS</span>
         </Link>
 
-        {/* Navegação Desktop */}
         <nav aria-label="Navegação principal" className="hidden md:flex items-center gap-8 text-white font-sans text-xs md:text-sm tracking-wide">
           <Link
             to="/"
@@ -141,7 +140,6 @@ export default function Navbar() {
           )}
         </nav>
 
-        {/* Botão Hambúrguer Mobile */}
         <button
           type="button"
           onClick={() => setMenuAberto((v) => !v)}
@@ -160,7 +158,6 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Drawer / Menu Mobile */}
       {menuAberto && (
         <div
           id="mobile-menu"

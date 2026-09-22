@@ -47,10 +47,8 @@ function EventCard({ evento }) {
       aria-label={`${tituloEvento}. ${dataFormatada ? `Data: ${dataFormatada}.` : ""} Local: ${localFormatado}.${precoFormatado ? ` A partir de ${precoFormatado}.` : ""}`}
       className="group relative w-full text-left rounded-2xl overflow-hidden bg-[#1c080e]/90 hover:bg-[#250b13] border border-white/10 hover:border-brand/40 shadow-lg hover:shadow-2xl hover:shadow-brand/10 hover:-translate-y-1.5 transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-black cursor-pointer flex flex-col justify-between"
     >
-      {/* Brilho sutil no hover */}
       <div className="absolute inset-0 bg-linear-to-t from-brand/10 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-      {/* Pôster do Evento */}
       <div className="relative aspect-2/3 w-full bg-[#18080c] overflow-hidden">
         {imgLoading && (
           <div className="absolute inset-0 animate-pulse bg-linear-to-br from-zinc-800 to-zinc-900" />
@@ -83,7 +81,6 @@ function EventCard({ evento }) {
           </div>
         )}
 
-        {/* Badge Categoria/Tipo */}
         <span
           className={`absolute top-3 left-3 ${corBadgeDoEvento(
             evento?.tipo
@@ -92,7 +89,6 @@ function EventCard({ evento }) {
           {evento?.tipo || "Evento"}
         </span>
 
-        {/* Badge Preço */}
         {precoFormatado && (
           <span className="absolute bottom-3 right-3 bg-black/75 backdrop-blur-md border border-white/10 text-emerald-400 text-[11px] font-semibold px-2.5 py-1 rounded-full shadow-md">
             {precoFormatado}
@@ -100,7 +96,6 @@ function EventCard({ evento }) {
         )}
       </div>
 
-      {/* Metadados do Evento */}
       <div className="p-4 flex flex-col justify-between flex-1 gap-2.5">
         <div>
           {dataFormatada && (

@@ -1,7 +1,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
-import { buscarIngressoPorToken } from "../services/ticketService";
+import { buscarIngressoPorToken } from "./api";
 
 const STATUS_STYLE = {
   EMITIDO: "bg-emerald-500/20 text-emerald-400",
@@ -9,7 +9,7 @@ const STATUS_STYLE = {
   CANCELADO: "bg-red-500/20 text-red-400",
 };
 
-export default function SharedTicket() {
+export default function SharedTicketPage() {
   const { token } = useParams();
   const [ingresso, setIngresso] = useState(null);
   const [loading, setLoading] = useState(true);

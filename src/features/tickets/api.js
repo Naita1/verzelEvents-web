@@ -1,4 +1,4 @@
-import api from "./api";
+import api from "../../services/api";
 
 export async function listarIngressos() {
   const response = await api.get("/cliente/ingressos");

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { QRCodeSVG } from "qrcode.react";
-import { listarIngressos } from "../services/ticketService";
+import { listarIngressos } from "./api";
 
 const STATUS_STYLE = {
   EMITIDO: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20",
@@ -15,7 +15,7 @@ const STATUS_ACCENT = {
   CANCELADO: "before:bg-red-500/60",
 };
 
-export default function MyTickets() {
+export default function MyTicketsPage() {
   const navigate = useNavigate();
 
   const [ingressos, setIngressos] = useState([]);

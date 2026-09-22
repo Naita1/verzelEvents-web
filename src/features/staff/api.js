@@ -1,4 +1,4 @@
-import api from "./api";
+import api from "../../services/api";
 
 /**
  * @param {{ nome: string, email: string, senha: string, role: "PORTARIA" | "ORGANIZADOR" }} dados

@@ -1,23 +1,15 @@
-import { useEffect, useState, useMemo, useDeferredValue } from "react";
-import { listarEventos } from "../services/eventService";
+import { useState, useMemo, useDeferredValue } from "react";
+import { useEvents } from "../features/events/hooks/useEvents";
 import Hero from "../components/Hero";
 import FeaturedShowcase from "../components/FeaturedShowcase";
 import EventCard from "../components/EventCard";
 import backgroundImg from "../assets/background.jpg";
 
 export default function Home() {
-  const [eventos, setEventos] = useState([]);
   const [busca, setBusca] = useState("");
   const [tipoFiltro, setTipoFiltro] = useState("TODOS");
-  const [loading, setLoading] = useState(true);
-  const [erro, setErro] = useState(null);
-
-  useEffect(() => {
-    listarEventos()
-      .then(setEventos)
-      .catch((err) => setErro(err.message))
-      .finally(() => setLoading(false));
-  }, []);
+  const { data: eventos = [], isLoading: loading, error } = useEvents();
+  const erro = error?.message;
 
   const tipos = useMemo(() => {
     const unicos = new Set(eventos.map((e) => e.tipo));

@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { pagarReserva } from "../services/paymentService";
+import { pagarReserva } from "./api";
 
 function useCountdown(expiresAt) {
   const [restante, setRestante] = useState(() =>
@@ -23,7 +23,7 @@ function useCountdown(expiresAt) {
 const inputClass =
   "w-full bg-bg border border-white/10 rounded-lg px-4 py-2.5 text-white font-sans text-sm outline-none transition-colors duration-300 focus:border-brand focus:ring-1 focus:ring-brand/30 placeholder:text-white/25";
 
-export default function Payment() {
+export default function PaymentPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { reservas, eventoTitulo } = location.state || {};

@@ -1,4 +1,4 @@
-import api from "./api";
+import api from "../../services/api";
 
 export async function pagarReserva(reservaId, dadosCartao) {
   const response = await api.post(

@@ -104,27 +104,29 @@ function FeaturedShowcase({ eventos, loading }) {
         onMouseLeave={() => setIsPaused(false)}
         onFocus={() => setIsPaused(true)}
         onBlur={() => setIsPaused(false)}
-        className="relative w-full bg-[#18050a]/85 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl shadow-black/80 min-h-95 p-6 sm:p-8 md:p-10 md:px-14 outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-black card-ticket-mask"
+        className="relative w-full bg-[#140509]/85 backdrop-blur-2xl border border-white/15 rounded-3xl shadow-2xl shadow-black/90 min-h-95 p-6 sm:p-8 md:p-10 md:px-14 outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-black card-ticket-mask overflow-hidden"
       >
+        <div className="absolute -top-24 -left-24 w-72 h-72 bg-brand/20 rounded-full blur-3xl pointer-events-none" />
+
         {temEventos && eventos.length > 1 && (
           <>
             <button
               onClick={anterior}
               aria-label="Evento anterior"
-              className="absolute -left-4 md:-left-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/60 hover:bg-black/85 text-white/90 hover:text-white border border-white/15 backdrop-blur-md flex items-center justify-center transition-all duration-200 active:scale-95 shadow-xl hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              className="absolute -left-3 md:-left-5 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#120408]/90 hover:bg-brand text-white/80 hover:text-white border border-white/20 backdrop-blur-xl flex items-center justify-center transition-all duration-200 active:scale-95 shadow-2xl hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             >
-              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z" />
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
               </svg>
             </button>
 
             <button
               onClick={proximo}
               aria-label="Próximo evento"
-              className="absolute -right-4 md:-right-6 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/60 hover:bg-black/85 text-white/90 hover:text-white border border-white/15 backdrop-blur-md flex items-center justify-center transition-all duration-200 active:scale-95 shadow-xl hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              className="absolute -right-3 md:-right-5 top-1/2 -translate-y-1/2 z-30 w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#120408]/90 hover:bg-brand text-white/80 hover:text-white border border-white/20 backdrop-blur-xl flex items-center justify-center transition-all duration-200 active:scale-95 shadow-2xl hover:scale-105 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
             >
-              <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z" />
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
               </svg>
             </button>
           </>
@@ -162,13 +164,13 @@ function FeaturedShowcase({ eventos, loading }) {
                 className="flex flex-col md:flex-row items-center justify-between gap-8 md:gap-10 lg:gap-12 min-h-80 transform-gpu"
               >
                 <div className="flex-1 flex flex-col justify-center my-auto py-1 min-w-0">
-                  <div className="flex items-center gap-2 mb-3">
-                    <span className="font-sans text-[11px] font-bold text-brand bg-brand/15 border border-brand/30 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                  <div className="flex items-center gap-2.5 mb-3">
+                    <span className="font-sans text-[10px] font-bold text-brand bg-brand/20 border border-brand/40 px-3 py-1 rounded-full uppercase tracking-widest">
                       {currentEvent.tipo || "Evento"}
                     </span>
                     {precoFormatado && (
-                      <span className="font-sans text-[11px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
-                        {precoFormatado}
+                      <span className="font-sans text-[11px] font-semibold text-emerald-400 bg-emerald-500/15 border border-emerald-500/30 px-3 py-1 rounded-full shadow-xs">
+                        A partir de {precoFormatado}
                       </span>
                     )}
                   </div>
@@ -177,14 +179,24 @@ function FeaturedShowcase({ eventos, loading }) {
                     {currentEvent.titulo || "Evento sem título"}
                   </h2>
 
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 font-sans text-xs md:text-sm text-white/70 mb-3">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 font-sans text-xs md:text-sm text-white/70 mb-4">
                     <span className="flex items-center gap-1.5 font-medium text-white/90">
-                      📍 {formatarLocal(currentEvent.local)}
+                      <svg className="w-3.5 h-3.5 text-brand shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                        <circle cx="12" cy="10" r="3" />
+                      </svg>
+                      {formatarLocal(currentEvent.local)}
                     </span>
                     {dataFormatada && (
                       <>
                         <span className="text-brand/70">•</span>
-                        <span>
+                        <span className="flex items-center gap-1.5">
+                          <svg className="w-3.5 h-3.5 text-white/50 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                            <line x1="16" x2="16" y1="2" y2="6" />
+                            <line x1="8" x2="8" y1="2" y2="6" />
+                            <line x1="3" x2="21" y1="10" y2="10" />
+                          </svg>
                           {dataFormatada} às {horaFormatada}
                         </span>
                       </>
@@ -200,15 +212,19 @@ function FeaturedShowcase({ eventos, loading }) {
                     <button
                       type="button"
                       onClick={() => navigate(`/eventos/${currentEvent.id}`)}
-                      className="font-sans font-semibold text-xs uppercase tracking-wider bg-brand hover:bg-brand-hover text-white rounded-full px-8 py-3 transition-all duration-300 ease-in-out active:scale-95 shadow-lg shadow-brand/25 hover:shadow-brand/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+                      className="group font-sans font-bold text-xs uppercase tracking-wider bg-linear-to-r from-brand via-[#bd224b] to-brand hover:brightness-110 text-white rounded-full px-8 py-3.5 flex items-center gap-2.5 transition-all duration-300 ease-in-out active:scale-95 shadow-lg shadow-brand/30 hover:shadow-brand/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
                     >
-                      Garantir Ingresso
+                      <span>Garantir Ingresso</span>
+                      <svg className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="5" y1="12" x2="19" y2="12" />
+                        <polyline points="12 5 19 12 12 19" />
+                      </svg>
                     </button>
                   </div>
                 </div>
 
                 <div className="shrink-0 flex items-center justify-center my-auto">
-                  <div className="relative w-36 sm:w-44 md:w-52 aspect-2/3 overflow-hidden rounded-2xl bg-zinc-900 shadow-2xl group ticket-mask">
+                  <div className="relative w-36 sm:w-44 md:w-52 aspect-2/3 overflow-hidden rounded-2xl bg-zinc-900 shadow-2xl border border-white/10 group ticket-mask">
                     {imgLoading && (
                       <div className="absolute inset-0 animate-pulse bg-linear-to-br from-zinc-800 to-zinc-900" />
                     )}

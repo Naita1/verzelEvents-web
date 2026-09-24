@@ -43,7 +43,7 @@ function useCountdown(expiresAt) {
 }
 
 const inputClass =
-  "w-full bg-[#120408]/80 border border-white/15 rounded-xl px-4 py-3 text-white font-sans text-sm outline-none transition-all duration-300 focus:border-brand focus:ring-2 focus:ring-brand/30 placeholder:text-white/40";
+  "w-full bg-white/[0.04] border border-white/10 rounded-2xl px-4.5 py-3.5 text-white font-sans text-sm outline-none transition-all duration-200 focus:border-brand/70 focus:ring-2 focus:ring-brand/40 focus:bg-white/[0.06] placeholder:text-white/30";
 
 function formatarMoeda(valor) {
   if (!valor || isNaN(valor)) return null;
@@ -165,23 +165,28 @@ export default function PaymentPage() {
 
   if (!reservas?.length) {
     return (
-      <div className="relative min-h-screen bg-[#0d0306] flex flex-col items-center justify-center px-6 py-12 text-center overflow-hidden">
+      <div className="relative min-h-screen bg-bg flex flex-col items-center justify-center px-6 py-12 text-center overflow-hidden font-sans">
         <div
-          className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-140 h-140 rounded-full opacity-[0.15] blur-3xl"
+          className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-140 h-140 rounded-full opacity-15 blur-3xl"
           style={{ background: "radial-gradient(circle, #a11b3e 0%, transparent 70%)" }}
         />
-        <div className="relative z-10 bg-[#17050b]/80 backdrop-blur-xl border border-white/10 rounded-3xl p-8 max-w-md w-full flex flex-col items-center gap-4 shadow-2xl">
-          <div className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-xl">
-            ⚠️
+        <div className="relative z-10 bg-[#140509]/90 backdrop-blur-2xl border border-white/15 rounded-3xl p-8 sm:p-10 max-w-md w-full flex flex-col items-center text-center shadow-2xl">
+          <div className="w-16 h-16 rounded-2xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-2 shadow-inner">
+            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+              <line x1="12" y1="9" x2="12" y2="13" />
+              <line x1="12" y1="17" x2="12.01" y2="17" />
+            </svg>
           </div>
-          <p className="font-sans text-white/60 text-sm">
+          <h2 className="font-display text-2xl text-white tracking-wide uppercase mt-2">Sessão Expirada</h2>
+          <p className="font-sans text-white/60 text-sm mt-1 mb-4 leading-relaxed">
             Nenhuma reserva pendente foi encontrada.
           </p>
           <button
             onClick={() => navigate("/")}
-            className="font-sans text-xs font-semibold uppercase tracking-wider bg-brand hover:bg-brand-hover text-white rounded-full px-7 py-3 transition-all duration-300 shadow-lg shadow-brand/25 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand mt-2"
+            className="font-sans text-xs font-bold uppercase tracking-wider bg-linear-to-r from-brand via-[#bd224b] to-brand hover:brightness-110 text-white rounded-full px-8 py-3.5 transition-all duration-300 shadow-lg shadow-brand/30 active:scale-95 cursor-pointer"
           >
-            Voltar para a Home
+            Voltar para os Eventos
           </button>
         </div>
       </div>
@@ -190,18 +195,20 @@ export default function PaymentPage() {
 
   if (resultado && resultado.falha.length === 0) {
     return (
-      <div className="relative min-h-screen bg-[#0d0306] flex flex-col items-center justify-center px-6 py-12 text-center overflow-hidden">
+      <div className="relative min-h-screen bg-bg flex flex-col items-center justify-center px-6 py-12 text-center overflow-hidden font-sans">
         <div
-          className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-140 h-140 rounded-full opacity-[0.15] blur-3xl"
+          className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 w-140 h-140 rounded-full opacity-15 blur-3xl"
           style={{ background: "radial-gradient(circle, #a11b3e 0%, transparent 70%)" }}
         />
-        <div className="relative z-10 bg-[#17050b]/80 backdrop-blur-xl border border-white/10 rounded-3xl p-8 md:p-10 max-w-md w-full flex flex-col items-center gap-5 shadow-2xl animate-[fadeIn_0.5s_ease-out_both]">
-          <div className="w-16 h-16 rounded-full bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-3xl">
-            ✓
+        <div className="relative z-10 bg-[#140509]/90 backdrop-blur-2xl border border-white/15 rounded-3xl p-8 sm:p-10 max-w-md w-full flex flex-col items-center gap-5 shadow-2xl animate-in fade-in zoom-in-95 duration-300">
+          <div className="w-16 h-16 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-inner">
+            <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="20 6 9 17 4 12" />
+            </svg>
           </div>
           <div>
-            <h1 className="font-display text-4xl text-white tracking-wide">
-              PAGAMENTO <span className="text-emerald-400">CONFIRMADO</span>
+            <h1 className="font-display text-3xl sm:text-4xl text-white tracking-wide uppercase">
+              Pagamento <span className="text-emerald-400">Confirmado</span>
             </h1>
             <p className="font-sans text-white/50 text-xs uppercase tracking-wider mt-1">
               {eventoTitulo}
@@ -212,7 +219,7 @@ export default function PaymentPage() {
           </p>
           <button
             onClick={() => navigate("/meus-ingressos")}
-            className="w-full font-sans text-xs font-semibold uppercase tracking-wider bg-brand hover:bg-brand-hover text-white rounded-full py-3.5 transition-all duration-300 shadow-lg shadow-brand/25 active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand mt-2"
+            className="w-full font-sans text-xs font-bold uppercase tracking-wider bg-linear-to-r from-brand via-[#bd224b] to-brand hover:brightness-110 text-white rounded-full py-3.5 transition-all duration-300 shadow-lg shadow-brand/30 active:scale-95 cursor-pointer mt-2"
           >
             Ver Meus Ingressos
           </button>
@@ -222,9 +229,13 @@ export default function PaymentPage() {
   }
 
   return (
-    <div className="relative min-h-screen bg-[#0d0306] px-6 md:px-16 py-12 font-sans overflow-hidden">
+    <div className="relative min-h-screen bg-bg px-6 md:px-12 lg:px-16 py-12 font-sans overflow-hidden">
       <div
-        className="pointer-events-none absolute -top-40 left-0 w-140 h-140 rounded-full opacity-[0.15] blur-3xl"
+        className="pointer-events-none absolute -top-40 left-0 w-140 h-140 rounded-full opacity-15 blur-3xl"
+        style={{ background: "radial-gradient(circle, #a11b3e 0%, transparent 70%)" }}
+      />
+      <div
+        className="pointer-events-none absolute bottom-0 right-0 w-120 h-120 rounded-full opacity-10 blur-3xl"
         style={{ background: "radial-gradient(circle, #a11b3e 0%, transparent 70%)" }}
       />
 
@@ -234,45 +245,53 @@ export default function PaymentPage() {
             visivel ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
           }`}
         >
-          <span className="font-sans text-white/40 text-xs md:text-sm tracking-[0.25em] uppercase">
-            Checkout Seguro
-          </span>
-          <h1 className="font-display text-4xl md:text-6xl text-white tracking-wide mt-2">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/15 border border-brand/30 mb-3 backdrop-blur-md shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
+            <span className="font-sans text-[11px] font-bold text-brand uppercase tracking-[0.2em]">
+              Checkout Seguro
+            </span>
+          </div>
+          <h1 className="font-display text-4xl md:text-6xl text-white tracking-wide">
             FINALIZAR <span className="text-brand">PAGAMENTO</span>
           </h1>
-          <div className="h-px w-full max-w-40 bg-linear-to-r from-brand/60 to-transparent mt-5" />
+          <p className="font-sans text-xs md:text-sm text-white/50 mt-2 max-w-md">
+            Conclua o pagamento para garantir seus ingressos antes que o tempo da reserva expire.
+          </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 mt-10">
           <div
-            className={`lg:col-span-5 bg-[#17050b]/80 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-7 flex flex-col justify-between shadow-2xl transition-all duration-500 ease-out delay-75 ${
+            className={`lg:col-span-5 bg-[#140509]/85 backdrop-blur-2xl border border-white/15 rounded-3xl p-6 md:p-7 flex flex-col justify-between shadow-2xl transition-all duration-500 ease-out delay-75 ${
               visivel ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
             }`}
           >
             <div>
-              <div className="flex items-center justify-between mb-4">
-                <span className="font-sans text-[11px] text-white/40 uppercase tracking-wider">
+              <div className="flex items-center justify-between mb-5">
+                <span className="font-sans text-[11px] font-bold text-white/50 uppercase tracking-widest">
                   Tempo Restante
                 </span>
                 {restante !== null && (
                   <div
                     aria-live="polite"
-                    className={`flex items-center gap-2 font-sans text-xs font-bold px-3 py-1 rounded-full border transition-all duration-300 ${
+                    className={`flex items-center gap-2 font-mono text-xs font-bold px-3 py-1.5 rounded-full border transition-all duration-300 ${
                       restante < 60000
-                        ? "bg-red-500/20 border-red-500/40 text-red-400 animate-pulse"
-                        : "bg-white/10 border-white/10 text-white/80"
+                        ? "bg-red-500/20 border-red-500/40 text-red-400 shadow-lg shadow-red-500/20 animate-pulse"
+                        : "bg-white/10 border-white/15 text-white/90"
                     }`}
                   >
-                    <span className="w-2 h-2 rounded-full bg-current" />
+                    <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="10" />
+                      <polyline points="12 6 12 12 16 14" />
+                    </svg>
                     {texto}
                   </div>
                 )}
               </div>
 
-              <h2 className="font-display text-2xl tracking-wide text-white mb-2">
+              <h2 className="font-display text-2xl tracking-wide text-white mb-3">
                 RESUMO DA RESERVA
               </h2>
-              <div className="bg-[#120408]/80 border border-white/10 rounded-2xl p-4 mb-6">
+              <div className="bg-white/4 border border-white/10 rounded-2xl p-4 mb-6">
                 <p className="font-sans text-white font-semibold text-base mb-1">
                   {eventoTitulo}
                 </p>
@@ -281,13 +300,13 @@ export default function PaymentPage() {
                 </p>
               </div>
 
-              <div className="flex flex-col gap-2.5 border-t border-white/10 pt-4 max-h-52 overflow-y-auto pr-1">
+              <div className="flex flex-col gap-2.5 border-t border-white/10 pt-4 max-h-52 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-white/10">
                 {reservas.map((r, index) => (
-                  <div key={r.id || index} className="flex justify-between items-center text-xs bg-white/5 px-3 py-2 rounded-lg">
-                    <span className="font-sans text-white/80 font-medium">
+                  <div key={r.id || index} className="flex justify-between items-center text-xs bg-white/4 border border-white/5 px-3.5 py-2.5 rounded-xl">
+                    <span className="font-sans text-white/90 font-medium">
                       {r.assentoCodigo || r.codigoAssento ? `Assento ${r.assentoCodigo || r.codigoAssento}` : `Ingresso #${index + 1}`}
                     </span>
-                    <span className="text-white/50 font-mono text-[11px]">
+                    <span className="text-emerald-400 font-mono text-[11px] font-semibold">
                       {r.valor || r.valorIngresso ? formatarMoeda(r.valor || r.valorIngresso) : `#${r.id?.toString().slice(0, 8)}`}
                     </span>
                   </div>
@@ -295,9 +314,9 @@ export default function PaymentPage() {
               </div>
 
               {valorTotal > 0 && (
-                <div className="mt-4 pt-3 border-t border-white/10 flex justify-between items-center">
-                  <span className="font-sans text-xs uppercase tracking-wider text-white/50">Total a pagar</span>
-                  <span className="font-sans text-lg font-bold text-emerald-400">{formatarMoeda(valorTotal)}</span>
+                <div className="mt-5 pt-4 border-t border-white/10 flex justify-between items-center">
+                  <span className="font-sans text-xs uppercase tracking-wider text-white/60 font-semibold">Total a pagar</span>
+                  <span className="font-sans text-xl font-bold text-emerald-400">{formatarMoeda(valorTotal)}</span>
                 </div>
               )}
             </div>
@@ -312,23 +331,24 @@ export default function PaymentPage() {
             </div>
           </div>
           <div
-            className={`lg:col-span-7 bg-[#17050b]/80 backdrop-blur-xl border border-white/10 rounded-3xl p-6 md:p-7 shadow-2xl transition-all duration-500 ease-out delay-150 ${
+            className={`lg:col-span-7 bg-[#140509]/85 backdrop-blur-2xl border border-white/15 rounded-3xl p-6 md:p-8 shadow-2xl transition-all duration-500 ease-out delay-150 ${
               visivel ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
             }`}
           >
             <h2 className="font-display text-2xl tracking-wide text-white mb-1">
               DADOS DO CARTÃO
             </h2>
-            <p className="font-sans text-white/40 text-xs mb-6">
+            <p className="font-sans text-white/50 text-xs mb-6">
               Insira os dados do cartão de crédito para processar o pagamento.
             </p>
 
-            {/* Pré-visualização estética do Cartão */}
-            <div className="mb-6 p-5 rounded-2xl bg-linear-to-tr from-[#250812] via-[#43101e] to-[#67142b] border border-white/15 text-white shadow-xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-44 h-44 bg-white/5 rounded-full blur-2xl pointer-events-none" />
+            <div className="mb-6 p-6 rounded-3xl bg-linear-to-tr from-[#1b050d] via-[#3d0f1b] to-[#6e142c] border border-white/20 text-white shadow-2xl relative overflow-hidden">
+              <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none" />
               <div className="flex justify-between items-center mb-6">
-                <span className="text-[10px] uppercase font-bold tracking-widest text-white/70">Cartão de Crédito</span>
-                <span className="w-9 h-6 rounded bg-amber-400/80 inline-block border border-amber-300 shadow-sm" />
+                <span className="text-[10px] uppercase font-bold tracking-widest text-white/75">Cartão Virtual</span>
+                <div className="w-10 h-7 rounded-lg bg-linear-to-br from-amber-300 via-amber-400 to-amber-600 border border-amber-200/50 shadow-md relative overflow-hidden flex items-center justify-center">
+                  <div className="w-6 h-4 border border-black/25 rounded-xs" />
+                </div>
               </div>
               <p className="font-mono text-base sm:text-lg tracking-[0.18em] mb-4 text-white/95">
                 {formatarPreviewCartao(numeroCartao)}
@@ -347,12 +367,13 @@ export default function PaymentPage() {
               </div>
             </div>
 
-            <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4.5">
               <div>
-                <label className="font-sans text-[11px] text-white/50 uppercase tracking-wider block mb-1.5">
+                <label htmlFor="card-number" className="font-sans text-[11px] font-bold text-white/50 uppercase tracking-widest block mb-1.5">
                   Número do Cartão
                 </label>
                 <input
+                  id="card-number"
                   type="text"
                   placeholder="0000 0000 0000 0000"
                   value={numeroCartao}
@@ -367,10 +388,11 @@ export default function PaymentPage() {
               </div>
 
               <div>
-                <label className="font-sans text-[11px] text-white/50 uppercase tracking-wider block mb-1.5">
+                <label htmlFor="card-holder" className="font-sans text-[11px] font-bold text-white/50 uppercase tracking-widest block mb-1.5">
                   Nome do Titular
                 </label>
                 <input
+                  id="card-holder"
                   type="text"
                   placeholder="Nome impresso no cartão"
                   value={nomeTitular}
@@ -383,10 +405,11 @@ export default function PaymentPage() {
 
               <div className="flex gap-3">
                 <div className="flex-1">
-                  <label className="font-sans text-[11px] text-white/50 uppercase tracking-wider block mb-1.5">
+                  <label htmlFor="card-exp" className="font-sans text-[11px] font-bold text-white/50 uppercase tracking-widest block mb-1.5">
                     Validade
                   </label>
                   <input
+                    id="card-exp"
                     type="text"
                     placeholder="MM/AA"
                     value={validade}
@@ -400,10 +423,11 @@ export default function PaymentPage() {
                   />
                 </div>
                 <div className="w-32">
-                  <label className="font-sans text-[11px] text-white/50 uppercase tracking-wider block mb-1.5">
+                  <label htmlFor="card-cvv" className="font-sans text-[11px] font-bold text-white/50 uppercase tracking-widest block mb-1.5">
                     CVV
                   </label>
                   <input
+                    id="card-cvv"
                     type="text"
                     placeholder="123"
                     value={cvv}
@@ -419,7 +443,7 @@ export default function PaymentPage() {
               </div>
 
               {resultado?.falha.length > 0 && (
-                <div role="alert" className="bg-red-950/40 border border-red-500/30 rounded-xl px-4 py-3 animate-[fadeIn_0.3s_ease-out_both]">
+                <div role="alert" className="bg-red-950/40 border border-red-500/30 rounded-2xl px-4 py-3.5 animate-in fade-in duration-200">
                   <p className="font-sans text-red-400 text-xs font-semibold">
                     Pagamento Recusado
                   </p>
@@ -436,7 +460,7 @@ export default function PaymentPage() {
                 type="submit"
                 disabled={processando}
                 aria-busy={processando}
-                className="font-sans font-semibold text-xs uppercase tracking-wider bg-brand hover:bg-brand-hover disabled:opacity-50 text-white rounded-full py-3.5 mt-2 transition-all duration-300 shadow-lg shadow-brand/25 flex items-center justify-center gap-2 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+                className="font-sans font-bold text-xs uppercase tracking-wider bg-linear-to-r from-brand via-[#bd224b] to-brand hover:brightness-110 disabled:opacity-50 text-white rounded-full py-4 mt-2 transition-all duration-300 shadow-lg shadow-brand/30 hover:shadow-brand/50 flex items-center justify-center gap-2.5 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand cursor-pointer"
               >
                 {processando ? (
                   <>
@@ -444,14 +468,14 @@ export default function PaymentPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
                     </svg>
-                    Processando Pagamento...
+                    <span>Processando Pagamento...</span>
                   </>
                 ) : (
-                  "Confirmar Pagamento"
+                  <span>Confirmar Pagamento</span>
                 )}
               </button>
 
-              <p className="font-sans text-white/30 text-[11px] text-center mt-1">
+              <p className="font-sans text-white/40 text-[11px] text-center mt-1">
                 Pagamento simulado — utilize final <span className="font-mono text-white/50">0000</span> para testar recusa.
               </p>
             </form>

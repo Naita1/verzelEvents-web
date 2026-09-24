@@ -4,6 +4,14 @@ import { useEventDetail } from "../features/events/hooks/useEventDetail";
 import { usePosterEvento } from "../utils/usePosterEvento";
 import SeatMap from "../components/SeatMap";
 
+function formatarMoeda(valor) {
+  const num = Number(valor || 0);
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(num);
+}
+
 import bgImage from "../assets/background3.jpg";
 
 function gerarLayoutDinamico(totalAssentos) {
@@ -94,7 +102,6 @@ export default function EventDetail() {
 
   async function confirmarReserva() {
     if (selecionados.length === 0) return;
-    setConfirmando(true);
     setResultadoParcial(null);
 
     try {
@@ -139,26 +146,45 @@ export default function EventDetail() {
           erro: err.message || "Erro na reserva",
         })),
       });
-    } finally {
-      setConfirmando(false);
     }
   }
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#0d0b0e] flex items-center justify-center pt-32">
-        <p className="font-sans text-white/50 text-xs tracking-widest uppercase">Carregando evento...</p>
+      <div className="relative min-h-screen bg-bg flex items-center justify-center pt-32 font-sans overflow-hidden">
+        <div
+          className="pointer-events-none absolute -top-40 right-0 w-140 h-140 rounded-full opacity-15 blur-3xl"
+          style={{ background: "radial-gradient(circle, #a11b3e 0%, transparent 70%)" }}
+        />
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 rounded-full border-2 border-brand/30 border-t-brand animate-spin" />
+          <p className="font-sans text-white/60 text-xs tracking-widest uppercase font-semibold">
+            Carregando detalhes do evento...
+          </p>
+        </div>
       </div>
     );
   }
 
   if (erro || !evento) {
     return (
-      <div className="min-h-screen bg-[#0d0b0e] flex flex-col items-center justify-center gap-4 px-6 pt-32 text-center">
-        <p className="font-sans text-red-400 font-medium">{erro || "Evento não encontrado."}</p>
+      <div className="relative min-h-screen bg-bg flex flex-col items-center justify-center gap-5 px-6 pt-32 text-center font-sans overflow-hidden">
+        <div
+          className="pointer-events-none absolute -top-40 right-0 w-140 h-140 rounded-full opacity-15 blur-3xl"
+          style={{ background: "radial-gradient(circle, #a11b3e 0%, transparent 70%)" }}
+        />
+        <div className="w-16 h-16 rounded-2xl bg-red-500/15 border border-red-500/30 flex items-center justify-center text-red-400 shadow-inner">
+          <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+        </div>
+        <h2 className="font-display text-2xl text-white tracking-wide uppercase">Evento Indisponível</h2>
+        <p className="font-sans text-white/60 text-sm max-w-sm">{erro || "Não foi possível carregar as informações deste evento."}</p>
         <button
           onClick={() => navigate("/")}
-          className="font-sans font-semibold text-xs uppercase tracking-wider bg-[#a11b3e] text-white rounded-full px-6 py-3 transition-colors"
+          className="font-sans font-bold text-xs uppercase tracking-wider bg-linear-to-r from-brand via-[#bd224b] to-brand text-white rounded-full px-8 py-3.5 shadow-lg shadow-brand/30 hover:brightness-110 transition-all cursor-pointer"
         >
           Voltar para a Home
         </button>
@@ -175,15 +201,23 @@ export default function EventDetail() {
           className="w-full h-full object-cover object-center"
           loading="eager"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-[#1a050b]/85 via-[#0f0407]/90 to-[#0d0b0e]" />
+        <div className="absolute inset-0 bg-linear-to-b from-[#140509]/90 via-[#0b0306]/92 to-[#090204]" />
+        <div
+          className="pointer-events-none absolute -top-40 right-0 w-140 h-140 rounded-full opacity-15 blur-3xl"
+          style={{ background: "radial-gradient(circle, #a11b3e 0%, transparent 70%)" }}
+        />
+        <div
+          className="pointer-events-none absolute bottom-0 left-0 w-120 h-120 rounded-full opacity-10 blur-3xl"
+          style={{ background: "radial-gradient(circle, #a11b3e 0%, transparent 70%)" }}
+        />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-        <div className="lg:col-span-4 bg-[#2a0e16]/90 border border-white/10 rounded-2xl p-6 shadow-2xl flex flex-col justify-between backdrop-blur-md">
+        <div className="lg:col-span-4 bg-[#140509]/85 border border-white/15 rounded-3xl p-6 shadow-2xl flex flex-col justify-between backdrop-blur-2xl">
           <div>
-            <div className="relative aspect-[3/4] w-full rounded-xl overflow-hidden mb-6 bg-[#18080c] border border-white/10 flex items-center justify-center">
+            <div className="relative aspect-3/4 w-full rounded-2xl overflow-hidden mb-6 bg-[#0d0305] border border-white/10 flex items-center justify-center shadow-xl">
               {imgLoading && (
-                <div className="absolute inset-0 animate-pulse bg-gradient-to-br from-zinc-800 to-zinc-900" />
+                <div className="absolute inset-0 animate-pulse bg-linear-to-br from-zinc-800 to-zinc-900" />
               )}
 
               {!imgLoading && imageUrl && (
@@ -200,8 +234,8 @@ export default function EventDetail() {
 
               {!imgLoading && !imageUrl && (
                 <div className="text-center p-6">
-                  <div className="w-12 h-12 rounded-full bg-[#a11b3e]/20 border border-[#a11b3e] flex items-center justify-center mx-auto mb-3">
-                    <span className="text-lg font-bold text-[#a11b3e]">
+                  <div className="w-12 h-12 rounded-2xl bg-brand/20 border border-brand/40 flex items-center justify-center mx-auto mb-3 shadow-inner">
+                    <span className="text-lg font-bold text-brand">
                       {evento.titulo ? evento.titulo.charAt(0).toUpperCase() : "E"}
                     </span>
                   </div>
@@ -209,27 +243,41 @@ export default function EventDetail() {
                 </div>
               )}
 
-              <span className="absolute top-4 left-4 bg-[#a11b3e] text-white text-[10px] font-bold tracking-wider uppercase px-3 py-1 rounded-full shadow-md z-10">
+              <span className="absolute top-4 left-4 bg-brand text-white text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full shadow-lg z-10 border border-white/20">
                 {evento.tipo || "CINEMA"}
               </span>
             </div>
 
-            <h1 className="font-display text-2xl uppercase tracking-wider text-white font-bold mb-4">
+            <h1 className="font-display text-2xl uppercase tracking-wider text-white font-bold mb-3 leading-snug">
               {evento.titulo}
             </h1>
+            {evento.descricao && (
+              <p className="font-sans text-xs text-white/60 leading-relaxed mb-4 line-clamp-3">
+                {evento.descricao}
+              </p>
+            )}
           </div>
 
-          <div className="pt-4 border-t border-white/10 text-xs text-white/70 space-y-3">
-            <p><strong className="text-white">Local:</strong> {evento.local}</p>
-            <p><strong className="text-white">Ingresso:</strong> R$ {precoUnitario.toFixed(2)}</p>
+          <div className="pt-4 border-t border-white/10 text-xs text-white/70 space-y-2.5">
+            <div className="flex items-center gap-2">
+              <svg className="w-4 h-4 text-brand shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                <circle cx="12" cy="10" r="3" />
+              </svg>
+              <span className="truncate" title={evento.local}>{evento.local}</span>
+            </div>
+            <div className="flex items-center justify-between pt-1">
+              <span className="text-white/50 text-[11px] uppercase tracking-wider">Valor unitário:</span>
+              <span className="text-emerald-400 font-bold text-sm">{formatarMoeda(precoUnitario)}</span>
+            </div>
           </div>
         </div>
 
-        <div className="lg:col-span-8 bg-[#2a0e16]/90 border border-white/10 rounded-2xl p-6 md:p-8 shadow-2xl flex flex-col justify-between backdrop-blur-md">
+        <div className="lg:col-span-8 bg-[#140509]/85 border border-white/15 rounded-3xl p-6 md:p-8 shadow-2xl flex flex-col justify-between backdrop-blur-2xl">
           <div>
-            <div className="flex items-center gap-4 sm:gap-6 text-[10px] uppercase font-bold tracking-widest text-white/40 pb-6 border-b border-white/10 overflow-x-auto whitespace-nowrap no-scrollbar">
+            <div className="flex items-center gap-4 sm:gap-6 text-[10px] uppercase font-bold tracking-widest text-white/40 pb-6 border-b border-white/10 overflow-x-auto whitespace-nowrap scrollbar-none">
               <span>01 Escolha o Filme</span>
-              <span className="text-[#a11b3e] border-b-2 border-[#a11b3e] pb-1">02 Escolha os Assentos</span>
+              <span className="text-brand border-b-2 border-brand pb-1">02 Escolha os Assentos</span>
               <span>03 Pagamento</span>
               <span>04 Concluído</span>
             </div>
@@ -240,19 +288,18 @@ export default function EventDetail() {
               </h1>
 
               <div className="flex items-center gap-3 text-xs">
-                <span className="bg-black/40 border border-white/10 px-3 py-1.5 rounded-full text-white/80">
+                <span className="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-white/80">
                   {evento.duracao || "106"} minutos
                 </span>
-                <span className="bg-[#a11b3e] text-white font-bold px-3 py-1.5 rounded-full text-[10px] tracking-wider uppercase">
+                <span className="bg-brand text-white font-bold px-3 py-1 rounded-full text-[10px] tracking-wider uppercase">
                   {evento.classificacao || "PG-13"}
                 </span>
               </div>
             </div>
-
             <div className="mt-8 mb-6 flex flex-col items-center">
-              <div className="w-full max-w-xl h-2 border-t-2 border-[#a11b3e] rounded-t-[100%] shadow-[0_-6px_12px_rgba(161,27,62,0.5)]" />
-              <span className="text-[9px] tracking-[0.4em] text-white/40 uppercase mt-2 font-semibold">
-                T E L A
+              <div className="w-full max-w-xl h-2.5 border-t-2 border-brand rounded-t-[100%] shadow-[0_-8px_20px_rgba(161,27,62,0.5)]" />
+              <span className="text-[10px] tracking-[0.4em] text-white/40 uppercase mt-2.5 font-bold">
+                T E L A  /  P A L C O
               </span>
             </div>
             
@@ -272,18 +319,18 @@ export default function EventDetail() {
           <div>
             <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-center gap-8 text-xs text-white/60">
               <span className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-xs bg-[#a11b3e]" /> Selecionado
+                <span className="w-3.5 h-3.5 rounded-md bg-brand border border-brand/50 shadow-xs" /> Selecionado
               </span>
               <span className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-xs bg-white/20" /> Disponível
+                <span className="w-3.5 h-3.5 rounded-md bg-white/20 border border-white/20" /> Disponível
               </span>
               <span className="flex items-center gap-2">
-                <span className="w-3 h-3 rounded-xs bg-red-950/80 border border-red-800/40" /> Ocupado
+                <span className="w-3.5 h-3.5 rounded-md bg-red-950/80 border border-red-800/40 opacity-50" /> Ocupado
               </span>
             </div>
 
             {resultadoParcial?.falha?.length > 0 && (
-              <div className="mt-6 bg-red-950/80 border border-red-500/50 rounded-xl p-4 text-xs text-red-200">
+              <div className="mt-6 bg-red-950/80 border border-red-500/50 rounded-2xl p-4 text-xs text-red-200">
                 <p className="font-bold mb-1">Erro ao reservar assento(s):</p>
                 <ul className="list-disc list-inside space-y-1">
                   {resultadoParcial.falha.map((f, i) => (
@@ -297,23 +344,32 @@ export default function EventDetail() {
           </div>
         </div>
       </div>
-      
       {selecionados.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-xl bg-[#2a0e16] border border-white/15 rounded-full px-8 py-4 flex items-center justify-between shadow-2xl z-50">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-xl bg-[#140509]/95 backdrop-blur-2xl border border-white/20 rounded-full px-7 py-3.5 flex items-center justify-between shadow-2xl shadow-black/90 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
           <div>
-            <span className="text-white/50 text-[10px] tracking-widest uppercase block">
+            <span className="text-white/50 text-[10px] tracking-widest uppercase font-semibold block">
               {selecionados.length} assento(s) selecionado(s)
             </span>
-            <p className="font-display text-2xl text-[#a11b3e] font-bold">
-              R$ {valorTotal.toFixed(2)}
+            <p className="font-display text-2xl text-emerald-400 font-bold">
+              {formatarMoeda(valorTotal)}
             </p>
           </div>
           <button
             onClick={confirmarReserva}
             disabled={confirmando}
-            className="font-semibold text-xs uppercase tracking-wider bg-[#e2e8f0] text-black hover:bg-white disabled:opacity-50 rounded-full px-8 py-3.5 transition-colors shadow-lg"
+            className="font-bold text-xs uppercase tracking-wider bg-linear-to-r from-brand via-[#bd224b] to-brand text-white hover:brightness-110 active:scale-95 disabled:opacity-50 rounded-full px-8 py-3.5 transition-all shadow-lg shadow-brand/30 cursor-pointer flex items-center gap-2"
           >
-            {confirmando ? "Reservando..." : "Confirmar Reserva"}
+            {confirmando ? (
+              <>
+                <svg className="w-4 h-4 animate-spin text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                </svg>
+                <span>Reservando...</span>
+              </>
+            ) : (
+              <span>Confirmar Reserva</span>
+            )}
           </button>
         </div>
       )}

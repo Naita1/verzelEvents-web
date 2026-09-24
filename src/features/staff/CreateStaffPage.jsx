@@ -8,12 +8,14 @@ const ROLES = [
     value: "PORTARIA",
     label: "Porteiro",
     description: "Acessa a validação de ingressos na entrada dos eventos.",
+    badge: "Validação & Check-in",
   },
   {
     value: "ORGANIZADOR",
     label: "Organizador",
     description:
       "Acesso total: cria eventos, gerencia ingressos e pode criar outras contas de equipe.",
+    badge: "Acesso Total",
   },
 ];
 
@@ -77,131 +79,146 @@ export default function CreateStaffPage() {
   }
 
   return (
-    <div className="relative min-h-screen pt-12 md:pt-20 pb-16 px-6 md:px-16 overflow-hidden">
+    <div className="relative min-h-screen pt-12 md:pt-20 pb-16 px-6 md:px-12 lg:px-16 overflow-hidden font-sans">
       <div className="absolute inset-0 z-0 pointer-events-none">
         <img
           src={backgroundImg}
           alt="Background Eventos"
           className="w-full h-full object-cover object-center"
         />
-        <div className="absolute inset-0 bg-[#0f0407]/90" />
+        <div className="absolute inset-0 bg-linear-to-b from-[#0b0306]/95 via-[#0b0306]/90 to-[#0b0306]" />
+        <div
+          className="pointer-events-none absolute -top-40 right-0 w-140 h-140 rounded-full opacity-15 blur-3xl"
+          style={{ background: "radial-gradient(circle, #a11b3e 0%, transparent 70%)" }}
+        />
       </div>
 
       <div className="relative z-10 max-w-2xl mx-auto">
-      
-
-        <div className="mb-6">
-          <h1 className="font-display text-3xl text-white tracking-wide uppercase">
-            Nova conta de equipe
+        <div className="mb-8">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand/15 border border-brand/30 mb-3 backdrop-blur-md shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
+            <span className="font-sans text-[11px] font-bold text-brand uppercase tracking-[0.2em]">
+              Gestão de Equipe
+            </span>
+          </div>
+          <h1 className="font-display text-3xl sm:text-4xl text-white tracking-wide uppercase">
+            Nova Conta de Staff
           </h1>
-          <p className="font-sans text-sm text-white/50 mt-1">
-            Crie acessos para Porteiros ou outros Organizadores.
+          <p className="font-sans text-xs sm:text-sm text-white/55 mt-1 max-w-lg">
+            Cadastre novos membros da equipe e configure credenciais de acesso seguro à plataforma.
           </p>
         </div>
 
         {success ? (
-          <div className="bg-white rounded-3xl p-8 sm:p-10 border border-white/10 text-center">
-            <div className="w-14 h-14 rounded-full bg-emerald-50 flex items-center justify-center mx-auto mb-4">
+          <div className="bg-[#140509]/90 backdrop-blur-2xl rounded-3xl p-8 sm:p-10 border border-white/15 text-center shadow-2xl relative overflow-hidden">
+            <div className="w-16 h-16 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center mx-auto mb-5 text-emerald-400 shadow-inner">
               <svg
-                width="26"
-                height="26"
+                className="w-8 h-8"
                 viewBox="0 0 24 24"
                 fill="none"
-                stroke="#059669"
-                strokeWidth="2"
+                stroke="currentColor"
+                strokeWidth="2.5"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               >
                 <path d="M20 6L9 17l-5-5" />
               </svg>
             </div>
-            <h2 className="font-display text-xl text-[#1e293b] uppercase tracking-wide mb-2">
-              Conta criada
+            <h2 className="font-display text-2xl text-white uppercase tracking-wide mb-2">
+              Conta Criada com Sucesso
             </h2>
-            <p className="font-sans text-sm text-slate-500 mb-8">
-              {success.nome} agora tem acesso como{" "}
-              <span className="font-semibold text-[#581c25]">
+            <p className="font-sans text-sm text-white/60 mb-8 max-w-md mx-auto leading-relaxed">
+              <strong className="text-white font-semibold">{success.nome}</strong> foi registrado como{" "}
+              <span className="inline-block px-2.5 py-0.5 rounded-full bg-brand/20 border border-brand/40 text-brand text-xs font-bold uppercase tracking-wider mx-1">
                 {success.role === "PORTARIA" ? "Porteiro" : "Organizador"}
               </span>
-              . As credenciais já podem ser compartilhadas com a pessoa.
+              . As credenciais de login já estão liberadas para acesso.
             </p>
-            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <div className="flex flex-col sm:flex-row gap-3.5 justify-center">
               <button
                 type="button"
                 onClick={() => {
                   resetForm();
                   setSuccess(null);
                 }}
-                className="font-sans font-semibold text-xs uppercase tracking-wider bg-[#581c25] hover:bg-[#43121a] text-white rounded-full py-3 px-6 transition-all duration-300"
+                className="font-sans font-bold text-xs uppercase tracking-wider bg-linear-to-r from-brand via-[#bd224b] to-brand hover:brightness-110 text-white rounded-full py-3.5 px-8 transition-all duration-300 shadow-lg shadow-brand/30 active:scale-95 cursor-pointer"
               >
                 Criar outra conta
               </button>
               <Link
                 to="/organizador"
-                className="font-sans font-semibold text-xs uppercase tracking-wider border border-slate-200 text-slate-500 hover:border-[#581c25]/40 hover:text-[#581c25] rounded-full py-3 px-6 transition-all duration-300 text-center"
+                className="font-sans font-bold text-xs uppercase tracking-wider border border-white/15 bg-white/5 hover:bg-white/10 text-white/80 hover:text-white rounded-full py-3.5 px-8 transition-all duration-300 text-center"
               >
                 Voltar para Meus Eventos
               </Link>
             </div>
           </div>
         ) : (
-          <div className="bg-white rounded-3xl p-8 sm:p-10 border border-white/10">
+          <div className="bg-[#140509]/85 backdrop-blur-2xl rounded-3xl p-7 sm:p-10 border border-white/15 shadow-2xl relative">
             <form onSubmit={handleSubmit} className="flex flex-col gap-6">
               <div>
-                <span className="block font-sans text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-3">
-                  Tipo de conta
+                <span className="block font-sans text-[11px] font-bold text-white/50 uppercase tracking-widest mb-3">
+                  Tipo de Acesso
                 </span>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {ROLES.map((r) => (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                  {ROLES.map((r) => {
+                    const selecionado = role === r.value;
+                    return (
                     <button
                       key={r.value}
                       type="button"
                       onClick={() => setRole(r.value)}
                       aria-pressed={role === r.value}
-                      className={`text-left rounded-2xl p-4 border transition-all duration-200 ${
-                        role === r.value
-                          ? "bg-[#581c25]/5 border-[#581c25]"
-                          : "bg-white border-slate-200 hover:border-[#581c25]/40"
+                        className={`text-left rounded-2xl p-4.5 border transition-all duration-200 cursor-pointer ${
+                          selecionado
+                            ? "bg-brand/20 border-brand ring-2 ring-brand/40 shadow-lg shadow-brand/15"
+                            : "bg-white/3 border-white/10 hover:border-white/25 hover:bg-white/6"
                       }`}
                     >
-                      <span className="flex items-center justify-between mb-1">
-                        <span
-                          className={`font-sans text-sm font-bold uppercase tracking-wide ${
-                            role === r.value
-                              ? "text-[#581c25]"
-                              : "text-[#1e293b]"
-                          }`}
-                        >
-                          {r.label}
-                        </span>
-                        <span
-                          className={`w-4 h-4 rounded-full border-2 shrink-0 ${
-                            role === r.value
-                              ? "border-[#581c25] bg-[#581c25]"
-                              : "border-slate-300"
-                          }`}
-                        />
-                      </span>
-                      <span className="font-sans text-xs text-slate-500 leading-relaxed block">
+                        <div className="flex items-center justify-between mb-2">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`font-sans text-sm font-bold uppercase tracking-wider ${
+                                selecionado ? "text-white" : "text-white/80"
+                              }`}
+                            >
+                              {r.label}
+                            </span>
+                            <span className="text-[9px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-white/50">
+                              {r.badge}
+                            </span>
+                          </div>
+                          <span
+                            className={`w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0 transition-colors ${
+                              selecionado
+                                ? "border-brand bg-brand"
+                                : "border-white/30 bg-transparent"
+                            }`}
+                          >
+                            {selecionado && <span className="w-1.5 h-1.5 rounded-full bg-white" />}
+                          </span>
+                        </div>
+                        <span className="font-sans text-xs text-white/55 leading-relaxed block">
                         {r.description}
                       </span>
                     </button>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
 
               <div>
                 <label
                   htmlFor="staff-nome"
-                  className="block font-sans text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2"
+                  className="block font-sans text-[11px] font-bold text-white/50 uppercase tracking-widest mb-2"
                 >
                   Nome completo
                 </label>
                 <div
-                  className={`relative border-b-2 transition-colors py-1 ${
+                  className={`relative flex items-center rounded-2xl bg-white/4 border px-4 py-3 transition-all duration-200 ${
                     fieldErrors.nome
-                      ? "border-red-400"
-                      : "border-slate-200 focus-within:border-[#581c25]"
+                      ? "border-red-400 ring-2 ring-red-400/20"
+                      : "border-white/10 focus-within:border-brand/70 focus-within:ring-2 focus-within:ring-brand/30"
                   }`}
                 >
                   <input
@@ -215,16 +232,11 @@ export default function CreateStaffPage() {
                     }}
                     placeholder="Ex: Maria Silva"
                     required
-                    className="w-full bg-transparent font-sans text-sm placeholder-slate-400 outline-none px-1 py-1"
-                    style={{
-                      color: "#1e293b",
-                      caretColor: "#581c25",
-                      colorScheme: "light",
-                    }}
+                    className="w-full bg-transparent font-sans text-sm text-white placeholder-white/30 outline-none tracking-wide"
                   />
                 </div>
                 {fieldErrors.nome && (
-                  <p className="font-sans text-[11px] text-red-500 mt-1 px-1">
+                  <p className="font-sans text-[11px] text-red-400 mt-1.5 px-1 font-medium">
                     {fieldErrors.nome}
                   </p>
                 )}
@@ -233,15 +245,15 @@ export default function CreateStaffPage() {
               <div>
                 <label
                   htmlFor="staff-email"
-                  className="block font-sans text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2"
+                  className="block font-sans text-[11px] font-bold text-white/50 uppercase tracking-widest mb-2"
                 >
                   E-mail
                 </label>
                 <div
-                  className={`relative border-b-2 transition-colors py-1 ${
+                  className={`relative flex items-center rounded-2xl bg-white/4 border px-4 py-3 transition-all duration-200 ${
                     fieldErrors.email
-                      ? "border-red-400"
-                      : "border-slate-200 focus-within:border-[#581c25]"
+                      ? "border-red-400 ring-2 ring-red-400/20"
+                      : "border-white/10 focus-within:border-brand/70 focus-within:ring-2 focus-within:ring-brand/30"
                   }`}
                 >
                   <input
@@ -255,16 +267,11 @@ export default function CreateStaffPage() {
                     }}
                     placeholder="nome@exemplo.com"
                     required
-                    className="w-full bg-transparent font-sans text-sm placeholder-slate-400 outline-none px-1 py-1"
-                    style={{
-                      color: "#1e293b",
-                      caretColor: "#581c25",
-                      colorScheme: "light",
-                    }}
+                    className="w-full bg-transparent font-sans text-sm text-white placeholder-white/30 outline-none tracking-wide"
                   />
                 </div>
                 {fieldErrors.email && (
-                  <p className="font-sans text-[11px] text-red-500 mt-1 px-1">
+                  <p className="font-sans text-[11px] text-red-400 mt-1.5 px-1 font-medium">
                     {fieldErrors.email}
                   </p>
                 )}
@@ -273,15 +280,15 @@ export default function CreateStaffPage() {
               <div>
                 <label
                   htmlFor="staff-senha"
-                  className="block font-sans text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-2"
+                  className="block font-sans text-[11px] font-bold text-white/50 uppercase tracking-widest mb-2"
                 >
                   Senha provisória
                 </label>
                 <div
-                  className={`relative border-b-2 transition-colors py-1 ${
+                  className={`relative flex items-center rounded-2xl bg-white/4 border px-4 py-3 transition-all duration-200 ${
                     fieldErrors.senha
-                      ? "border-red-400"
-                      : "border-slate-200 focus-within:border-[#581c25]"
+                      ? "border-red-400 ring-2 ring-red-400/20"
+                      : "border-white/10 focus-within:border-brand/70 focus-within:ring-2 focus-within:ring-brand/30"
                   }`}
                 >
                   <input
@@ -295,37 +302,48 @@ export default function CreateStaffPage() {
                     }}
                     placeholder="Mínimo 6 caracteres"
                     required
-                    className="w-full bg-transparent font-sans text-sm placeholder-slate-400 outline-none px-1 py-1"
-                    style={{
-                      color: "#1e293b",
-                      caretColor: "#581c25",
-                      colorScheme: "light",
-                    }}
+                    className="w-full bg-transparent font-sans text-sm text-white placeholder-white/30 outline-none tracking-wide"
                   />
                 </div>
                 {fieldErrors.senha && (
-                  <p className="font-sans text-[11px] text-red-500 mt-1 px-1">
+                  <p className="font-sans text-[11px] text-red-400 mt-1.5 px-1 font-medium">
                     {fieldErrors.senha}
                   </p>
                 )}
-                <p className="font-sans text-[11px] text-slate-400 mt-1 px-1">
-                  Combine com a pessoa que ela deve trocar a senha no primeiro
-                  accesso.
+                <p className="font-sans text-[11px] text-white/40 mt-1.5 px-1">
+                  Recomende à pessoa alterar a senha no primeiro acesso.
                 </p>
               </div>
 
               {error && (
-                <p className="font-sans text-xs text-red-500 text-center">
-                  {error}
-                </p>
+                <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center gap-2.5">
+                  <svg className="w-4 h-4 text-red-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10" />
+                    <line x1="12" y1="8" x2="12" y2="12" />
+                    <line x1="12" y1="16" x2="12.01" y2="16" />
+                  </svg>
+                  <p className="font-sans text-xs text-red-400 font-medium">
+                    {error}
+                  </p>
+                </div>
               )}
 
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full font-sans font-semibold text-xs uppercase tracking-wider bg-[#581c25] hover:bg-[#43121a] text-white rounded-full py-3.5 mt-2 transition-all duration-300 shadow-md hover:shadow-lg hover:shadow-[#581c25]/30 active:scale-95 disabled:opacity-50"
+                className="w-full font-sans font-bold text-xs uppercase tracking-wider bg-linear-to-r from-brand via-[#bd224b] to-brand hover:brightness-110 text-white rounded-full py-3.5 mt-2 transition-all duration-300 shadow-lg shadow-brand/30 hover:shadow-brand/50 active:scale-[0.99] disabled:opacity-50 cursor-pointer flex items-center justify-center gap-2"
               >
-                {loading ? "Criando..." : "Criar conta"}
+                {loading ? (
+                  <>
+                    <svg className="w-4 h-4 animate-spin text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+                    </svg>
+                    <span>Criando acesso...</span>
+                  </>
+                ) : (
+                  <span>Criar Conta de Staff</span>
+                )}
               </button>
             </form>
           </div>

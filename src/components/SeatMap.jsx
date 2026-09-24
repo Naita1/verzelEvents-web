@@ -1,24 +1,14 @@
 import { memo } from "react";
 
-const STATUS_STYLE = {
-  LIVRE: "bg-surface border-white/20 hover:border-brand text-white/70 cursor-pointer",
-  RESERVADO: "bg-yellow-500/20 border-yellow-500/40 text-yellow-500/60 cursor-not-allowed",
-  VENDIDO: "bg-white/5 border-white/5 text-white/20 cursor-not-allowed",
-};
-
-const SELECIONADO_STYLE = "bg-brand border-brand text-white cursor-pointer";
-
-const ROWS_AISLE_STATUS_STYLE = {
-  LIVRE: "bg-white/20 hover:bg-white/40 text-white cursor-pointer",
-  RESERVADO: "bg-red-950/80 border border-red-800/40 text-white/30 cursor-not-allowed opacity-60",
-  VENDIDO: "bg-red-950/80 border border-red-800/40 text-white/30 cursor-not-allowed opacity-60",
-  OCUPADO: "bg-red-950/80 border border-red-800/40 text-white/30 cursor-not-allowed opacity-60",
-};
-const ROWS_AISLE_SELECIONADO = "bg-[#a11b3e] border border-white/60 text-white font-bold shadow-lg shadow-[#a11b3e]/50 cursor-pointer scale-105";
-const ROWS_AISLE_BLOQUEADO = "bg-white/5 cursor-not-allowed opacity-30 text-white/20";
-
 function isOcupado(status) {
   return status === "OCUPADO" || status === "RESERVADO" || status === "VENDIDO";
+}
+
+function formatarStatusTexto(status, selecionado, bloqueado) {
+  if (selecionado) return "Selecionado";
+  if (isOcupado(status)) return "Indisponível";
+  if (bloqueado) return "Limite de assentos atingido";
+  return "Disponível";
 }
 
 const SeatButton = memo(function SeatButton({
@@ -28,53 +18,82 @@ const SeatButton = memo(function SeatButton({
   estaSelecionado,
   limiteAtingido,
   onToggle,
-  isRowsAisle,
 }) {
   const ocupado = isOcupado(status);
   const bloqueado = !estaSelecionado && limiteAtingido;
+  const rotuloAssento = codigo || id;
+  const statusDescricao = formatarStatusTexto(status, estaSelecionado, bloqueado);
 
-  if (isRowsAisle) {
-    const estilo = estaSelecionado
-      ? ROWS_AISLE_SELECIONADO
-      : ocupado
-      ? ROWS_AISLE_STATUS_STYLE[status] || ROWS_AISLE_STATUS_STYLE.OCUPADO
-      : bloqueado
-      ? ROWS_AISLE_BLOQUEADO
-      : ROWS_AISLE_STATUS_STYLE.LIVRE;
-
-    return (
-      <button
-        type="button"
-        onClick={() => onToggle(id)}
-        disabled={ocupado || bloqueado}
-        title={`${codigo || id} · ${status}`}
-        className={`w-7 h-7 sm:w-9 sm:h-9 rounded-md text-[10px] sm:text-xs font-medium transition-all duration-150 flex items-center justify-center ${estilo}`}
-      >
-        {codigo || id}
-      </button>
-    );
+  let classesEstilo;
+  if (estaSelecionado) {
+    classesEstilo =
+      "bg-brand border-white/60 text-white font-bold ring-2 ring-brand/50 shadow-md shadow-brand/40 scale-105 z-10 cursor-pointer";
+  } else if (ocupado) {
+    classesEstilo =
+      "bg-white/[0.03] border-white/5 text-white/20 cursor-not-allowed opacity-50";
+  } else if (bloqueado) {
+    classesEstilo =
+      "bg-white/[0.04] border-white/5 text-white/20 cursor-not-allowed opacity-35";
+  } else {
+    classesEstilo =
+      "bg-white/10 hover:bg-white/25 border-white/15 hover:border-white/40 text-white/90 hover:text-white hover:scale-110 active:scale-95 cursor-pointer shadow-sm";
   }
-
-  const estaLivre = status === "LIVRE";
-  const estilo = estaSelecionado
-    ? SELECIONADO_STYLE
-    : STATUS_STYLE[status] || STATUS_STYLE.VENDIDO;
 
   return (
     <button
-      disabled={!estaLivre && !estaSelecionado}
+      type="button"
+      disabled={ocupado || bloqueado}
       onClick={() => onToggle(id)}
-      className={`aspect-square rounded-md border font-sans text-xs font-semibold transition-colors ${estilo}`}
-      title={`${codigo || id} · ${status}`}
+      aria-pressed={estaSelecionado}
+      aria-label={`Assento ${rotuloAssento} - ${statusDescricao}`}
+      title={`Assento ${rotuloAssento} (${statusDescricao})`}
+      className={`w-7 h-7 sm:w-8.5 sm:h-8.5 rounded-t-lg rounded-b-sm border text-[10px] sm:text-[11px] font-sans font-medium transition-all duration-200 transform-gpu flex items-center justify-center select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-black ${classesEstilo}`}
     >
-      {codigo || id}
+      {rotuloAssento}
     </button>
   );
 });
 
-function GridSimples({ assentos, selecionados, onToggle }) {
+function LegendaMapa() {
   return (
-    <div className="grid grid-cols-8 sm:grid-cols-10 gap-2">
+    <div className="flex flex-wrap items-center justify-center gap-6 py-4 text-xs font-sans text-white/60 border-t border-white/10 mt-6 select-none">
+      <div className="flex items-center gap-2">
+        <span className="w-4 h-4 rounded-t-md rounded-b-xs bg-white/10 border border-white/20 inline-block shadow-xs" />
+        <span>Disponível</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="w-4 h-4 rounded-t-md rounded-b-xs bg-brand border border-white/60 ring-2 ring-brand/40 shadow-xs shadow-brand inline-block" />
+        <span className="text-white font-medium">Selecionado</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="w-4 h-4 rounded-t-md rounded-b-xs bg-white/4 border border-white/5 opacity-50 inline-block" />
+        <span>Indisponível</span>
+      </div>
+    </div>
+  );
+}
+
+function PalcoIndicador() {
+  return (
+    <div className="w-full flex flex-col items-center mb-8 pointer-events-none select-none">
+      <div className="relative w-full max-w-lg flex flex-col items-center">
+        <div
+          className="w-full h-8 border-t-2 border-brand/60 rounded-t-[100%] opacity-80"
+          style={{
+            boxShadow: "0 -8px 24px -4px rgba(161, 27, 62, 0.45)",
+          }}
+        />
+        <span className="font-sans text-[10px] sm:text-xs font-bold uppercase tracking-[0.3em] text-white/60 -mt-2 bg-[#120408] px-4 py-0.5 rounded-full border border-white/10">
+          PALCO / TELA
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function GridSimples({ assentos, selecionados, onToggle, limiteAtingido }) {
+  return (
+    <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-2 sm:gap-2.5 justify-items-center py-4">
       {assentos.map((assento) => (
         <SeatButton
           key={assento.id}
@@ -82,9 +101,8 @@ function GridSimples({ assentos, selecionados, onToggle }) {
           codigo={assento.codigo}
           status={assento.status}
           estaSelecionado={selecionados.includes(assento.id)}
-          limiteAtingido={false}
+          limiteAtingido={limiteAtingido}
           onToggle={onToggle}
-          isRowsAisle={false}
         />
       ))}
     </div>
@@ -96,7 +114,7 @@ function RowsAisle({ assentos, selecionados, onToggle, layout, limiteAtingido })
   const porFileira = groupSizes.reduce((a, b) => a + b, 0);
 
   return (
-    <div className="py-4 space-y-2.5 overflow-x-auto flex flex-col items-center">
+    <div className="py-2 space-y-2.5 overflow-x-auto flex flex-col items-center max-w-full px-2">
       {rowLabels.map((rowLabel, rowIndex) => {
         const cursor = rowIndex * porFileira;
         const assentosDaFileira = assentos.slice(cursor, cursor + porFileira);
@@ -104,8 +122,13 @@ function RowsAisle({ assentos, selecionados, onToggle, layout, limiteAtingido })
         let posicaoNaFileira = 0;
 
         return (
-          <div key={rowLabel} className="flex items-center justify-center gap-2 sm:gap-4 text-[10px] text-white/40 min-w-max">
-            <span className="w-4 text-center font-bold font-mono uppercase">{rowLabel}</span>
+          <div
+            key={rowLabel}
+            className="flex items-center justify-center gap-2 sm:gap-3.5 min-w-max select-none"
+          >
+            <span className="w-5 text-center font-bold font-mono text-[11px] text-white/40 uppercase">
+              {rowLabel}
+            </span>
 
             {groupSizes.map((tamanhoGrupo, grupoIdx) => {
               const inicioGrupo = posicaoNaFileira;
@@ -114,12 +137,22 @@ function RowsAisle({ assentos, selecionados, onToggle, layout, limiteAtingido })
               const isGrupoCentral = grupoIdx === 1;
 
               return (
-                <div key={grupoIdx} className={`flex gap-1.5 ${isGrupoCentral ? "mx-2 sm:mx-4" : ""}`}>
+                <div
+                  key={grupoIdx}
+                  className={`flex gap-1.5 sm:gap-2 ${
+                    isGrupoCentral ? "mx-3 sm:mx-5 relative after:content-[''] after:absolute after:-left-2 sm:after:-left-3.5 after:top-1/2 after:-translate-y-1/2 after:w-px after:h-4 after:bg-white/10" : ""
+                  }`}
+                >
                   {Array.from({ length: tamanhoGrupo }).map((_, i) => {
                     const assento = assentosDoGrupo[i];
 
                     if (!assento) {
-                      return <span key={`vazio-${rowLabel}-${grupoIdx}-${i}`} className="w-7 h-7 sm:w-9 sm:h-9" />;
+                      return (
+                        <span
+                          key={`vazio-${rowLabel}-${grupoIdx}-${i}`}
+                          className="w-7 h-7 sm:w-8.5 sm:h-8.5 opacity-0 pointer-events-none"
+                        />
+                      );
                     }
 
                     return (
@@ -131,7 +164,6 @@ function RowsAisle({ assentos, selecionados, onToggle, layout, limiteAtingido })
                         estaSelecionado={selecionados.includes(assento.id)}
                         limiteAtingido={limiteAtingido}
                         onToggle={onToggle}
-                        isRowsAisle={true}
                       />
                     );
                   })}
@@ -139,7 +171,9 @@ function RowsAisle({ assentos, selecionados, onToggle, layout, limiteAtingido })
               );
             })}
 
-            <span className="w-4 text-center font-bold font-mono uppercase">{rowLabel}</span>
+            <span className="w-5 text-center font-bold font-mono text-[11px] text-white/40 uppercase">
+              {rowLabel}
+            </span>
           </div>
         );
       })}
@@ -148,17 +182,32 @@ function RowsAisle({ assentos, selecionados, onToggle, layout, limiteAtingido })
 }
 
 export default memo(function SeatMap({ assentos, selecionados, onToggle, layout, limiteAtingido = false }) {
-  if (layout?.type === "rows-aisle") {
-    return (
-      <RowsAisle
-        assentos={assentos}
-        selecionados={selecionados}
-        onToggle={onToggle}
-        layout={layout}
-        limiteAtingido={limiteAtingido}
-      />
-    );
-  }
+  const isRowsAisle = layout?.type === "rows-aisle";
 
-  return <GridSimples assentos={assentos} selecionados={selecionados} onToggle={onToggle} />;
+  return (
+    <div className="w-full bg-[#140509]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-4 sm:p-7 md:p-8 shadow-2xl relative">
+      <PalcoIndicador />
+
+      <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+        {isRowsAisle ? (
+          <RowsAisle
+            assentos={assentos}
+            selecionados={selecionados}
+            onToggle={onToggle}
+            layout={layout}
+            limiteAtingido={limiteAtingido}
+          />
+        ) : (
+          <GridSimples
+            assentos={assentos}
+            selecionados={selecionados}
+            onToggle={onToggle}
+            limiteAtingido={limiteAtingido}
+          />
+        )}
+      </div>
+
+      <LegendaMapa />
+    </div>
+  );
 });

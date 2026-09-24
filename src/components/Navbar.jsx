@@ -74,7 +74,6 @@ export default function Navbar() {
       }`}
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-        {/* Brand / Logo */}
         <Link
           to="/"
           className="group flex items-center gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand rounded-xl py-1"
@@ -94,7 +93,6 @@ export default function Navbar() {
           </div>
         </Link>
 
-        {/* Desktop Navigation */}
         <nav aria-label="Navegação principal" className="hidden md:flex items-center gap-1.5 text-white font-sans text-xs md:text-sm">
           <Link
             to="/"
@@ -169,7 +167,6 @@ export default function Navbar() {
           )}
         </nav>
 
-        {/* Mobile menu button */}
         <button
           type="button"
           onClick={() => setMenuAberto((v) => !v)}
@@ -188,7 +185,6 @@ export default function Navbar() {
         </button>
       </div>
 
-      {/* Mobile Drawer & Overlay */}
       {menuAberto && (
         <>
           <div

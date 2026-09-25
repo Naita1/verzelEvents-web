@@ -1,39 +1,60 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #0d0e12;
-  --color-surface: #16171d;
-  --color-surface-glass: rgba(22, 23, 29, 0.6);
-
-  --color-brand: #b3324a;
-  --color-brand-hover: #942840;
-  --color-brand-glow: rgba(179, 50, 74, 0.35);
-
-  --color-accent: #a855f7;
-
-  --color-line: rgba(255, 255, 255, 0.08);
-  --color-line-strong: rgba(255, 255, 255, 0.14);
-
-  --font-display: "Bebas Neue", sans-serif;
-  --font-sans: "Inter", sans-serif;
+  --color-bg: #0b0306;
+  --color-surface-glass: rgba(20, 5, 9, 0.75);
+  --color-brand: #e6194b;
   --color-panel: #3a1120;
   --color-panel-light: #4a1729;
+}
 
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    background-color: var(--color-bg);
+    color: #ffffff;
+  }
+
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: var(--color-brand);
+    color: #ffffff;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0d0e12;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 9999px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-brand);
+  }
 }
 
 .glass {
   background: var(--color-surface-glass);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border: 1px solid var(--color-line);
 }
 
 .glow-brand {
-  box-shadow: 0 0 40px var(--color-brand-glow);
-}
-
-.shadow-deep {
-  box-shadow: 0 20px 60px -15px rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 25px -5px rgba(230, 25, 75, 0.4);
 }
 
 .ticket-mask {
@@ -42,5 +63,14 @@
   mask-composite: intersect;
   -webkit-mask-image: radial-gradient(circle at 0% 50%, transparent 16px, black 17px),
                       radial-gradient(circle at 100% 50%, transparent 16px, black 17px);
+  -webkit-mask-composite: source-in;
+}
+
+.card-ticket-mask {
+  mask-image: radial-gradient(circle at 0% 50%, transparent 20px, black 21px),
+              radial-gradient(circle at 100% 50%, transparent 20px, black 21px);
+  mask-composite: intersect;
+  -webkit-mask-image: radial-gradient(circle at 0% 50%, transparent 20px, black 21px),
+                      radial-gradient(circle at 100% 50%, transparent 20px, black 21px);
   -webkit-mask-composite: source-in;
 }

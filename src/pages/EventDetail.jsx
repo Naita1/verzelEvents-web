@@ -12,6 +12,21 @@ function formatarMoeda(valor) {
   }).format(num);
 }
 
+function formatarDataHora(dataString) {
+  if (!dataString) return null;
+  try {
+    const data = new Date(dataString);
+    return new Intl.DateTimeFormat("pt-BR", {
+      day: "2-digit",
+      month: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(data);
+  } catch {
+    return null;
+  }
+}
+
 import bgImage from "../assets/background3.jpg";
 
 function gerarLayoutDinamico(totalAssentos) {
@@ -248,9 +263,29 @@ export default function EventDetail() {
               </span>
             </div>
 
-            <h1 className="font-display text-2xl uppercase tracking-wider text-white font-bold mb-3 leading-snug">
+            <h2 className="font-display text-2xl uppercase tracking-wider text-white font-bold mb-3 leading-snug">
               {evento.titulo}
-            </h1>
+            </h2>
+
+            <div className="flex flex-wrap items-center gap-2 mb-4">
+              {evento.dataHora && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white/80 text-[11px] font-sans">
+                  <svg className="w-3.5 h-3.5 text-brand" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                    <line x1="16" y1="2" x2="16" y2="6" />
+                    <line x1="8" y1="2" x2="8" y2="6" />
+                    <line x1="3" y1="10" x2="21" y2="10" />
+                  </svg>
+                  {formatarDataHora(evento.dataHora)}
+                </span>
+              )}
+              {evento.duracao && (
+                <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white/70 text-[11px] font-sans">
+                  {evento.duracao} min
+                </span>
+              )}
+            </div>
+
             {evento.descricao && (
               <p className="font-sans text-xs text-white/60 leading-relaxed mb-4 line-clamp-3">
                 {evento.descricao}
@@ -275,36 +310,52 @@ export default function EventDetail() {
 
         <div className="lg:col-span-8 bg-[#140509]/85 border border-white/15 rounded-3xl p-6 md:p-8 shadow-2xl flex flex-col justify-between backdrop-blur-2xl">
           <div>
-            <div className="flex items-center gap-4 sm:gap-6 text-[10px] uppercase font-bold tracking-widest text-white/40 pb-6 border-b border-white/10 overflow-x-auto whitespace-nowrap scrollbar-none">
-              <span>01 Escolha o Filme</span>
-              <span className="text-brand border-b-2 border-brand pb-1">02 Escolha os Assentos</span>
-              <span>03 Pagamento</span>
-              <span>04 Concluído</span>
-            </div>
-                        
-            <div className="flex flex-wrap items-center justify-between gap-4 py-6 border-b border-white/10">
-              <h1 className="font-display text-3xl md:text-4xl text-white tracking-wide font-bold">
-                {evento.titulo}
-              </h1>
-
-              <div className="flex items-center gap-3 text-xs">
-                <span className="bg-white/5 border border-white/10 px-3 py-1 rounded-full text-white/80">
-                  {evento.duracao || "106"} minutos
-                </span>
-                <span className="bg-brand text-white font-bold px-3 py-1 rounded-full text-[10px] tracking-wider uppercase">
-                  {evento.classificacao || "PG-13"}
-                </span>
+            <nav aria-label="Progresso da compra" className="flex items-center gap-2 sm:gap-3 text-xs font-semibold pb-5 border-b border-white/10 overflow-x-auto scrollbar-none">
+              <div className="flex items-center gap-2 text-emerald-400">
+                <span className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-[10px] font-bold">✓</span>
+                <span className="hidden sm:inline">01. Evento</span>
               </div>
+              <span className="text-white/20">/</span>
+              <div className="flex items-center gap-2 text-white">
+                <span className="w-5 h-5 rounded-full bg-brand text-white flex items-center justify-center text-[10px] font-bold shadow-md shadow-brand/40">2</span>
+                <span className="font-bold tracking-wide">02. Assentos</span>
+              </div>
+              <span className="text-white/20">/</span>
+              <div className="flex items-center gap-2 text-white/40">
+                <span className="w-5 h-5 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px]">3</span>
+                <span className="hidden sm:inline">03. Pagamento</span>
+              </div>
+              <span className="text-white/20">/</span>
+              <div className="flex items-center gap-2 text-white/40">
+                <span className="w-5 h-5 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px]">4</span>
+                <span className="hidden sm:inline">04. Concluído</span>
+              </div>
+            </nav>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-5 pb-3">
+              <div>
+                <h1 className="font-display text-2xl sm:text-3xl text-white tracking-wide font-bold">
+                  SELEÇÃO DE ASSENTOS
+                </h1>
+                <p className="font-sans text-xs text-white/50 mt-1">
+                  Clique sobre os assentos desejados no mapa abaixo.
+                </p>
+              </div>
+              <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-white/70">
+                {vagasDisponiveisNoEvento} lugares disponíveis
+              </span>
             </div>
-            <div className="mt-8 mb-6 flex flex-col items-center">
-              <div className="w-full max-w-xl h-2.5 border-t-2 border-brand rounded-t-[100%] shadow-[0_-8px_20px_rgba(161,27,62,0.5)]" />
-              <span className="text-[10px] tracking-[0.4em] text-white/40 uppercase mt-2.5 font-bold">
+
+            <div className="mt-6 mb-4 flex flex-col items-center">
+              <div className="w-full max-w-lg h-10 bg-linear-to-b from-brand/20 via-brand/5 to-transparent rounded-t-[100px] border-t-2 border-brand shadow-[0_-8px_30px_rgba(161,27,62,0.4)] flex items-center justify-center" />
+              <span className="text-[10px] tracking-[0.45em] text-white/40 uppercase mt-2 font-bold flex items-center gap-2">
+                <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
                 T E L A  /  P A L C O
               </span>
             </div>
             
-            <div className="py-4 overflow-x-auto flex justify-center">
-              <div className="min-w-fit">
+            <div className="py-2 overflow-x-auto flex justify-center scrollbar-thin">
+              <div className="min-w-fit px-2">
                 <SeatMap
                   assentos={assentos}
                   selecionados={selecionados}
@@ -314,19 +365,49 @@ export default function EventDetail() {
                 />
               </div>
             </div>
+
+            {selecionados.length > 0 && (
+              <div className="mt-4 pt-3 border-t border-white/10 flex flex-wrap items-center gap-2 animate-in fade-in duration-200">
+                <span className="text-[11px] font-bold uppercase tracking-wider text-white/40 mr-1">
+                  Selecionados ({selecionados.length}):
+                </span>
+                {selecionados.map((id) => {
+                  const assentoObj = assentos.find((a) => a.id === id);
+                  return (
+                    <span
+                      key={id}
+                      className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-brand/20 border border-brand/40 text-brand text-xs font-mono font-bold"
+                    >
+                      {assentoObj?.codigo || id}
+                      <button
+                        type="button"
+                        onClick={() => toggleAssentoPorId(id)}
+                        className="hover:text-white transition-colors cursor-pointer text-sm leading-none"
+                        title="Remover assento"
+                      >
+                        ×
+                      </button>
+                    </span>
+                  );
+                })}
+              </div>
+            )}
           </div>
           
           <div>
-            <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-center gap-8 text-xs text-white/60">
-              <span className="flex items-center gap-2">
-                <span className="w-3.5 h-3.5 rounded-md bg-brand border border-brand/50 shadow-xs" /> Selecionado
-              </span>
-              <span className="flex items-center gap-2">
-                <span className="w-3.5 h-3.5 rounded-md bg-white/20 border border-white/20" /> Disponível
-              </span>
-              <span className="flex items-center gap-2">
-                <span className="w-3.5 h-3.5 rounded-md bg-red-950/80 border border-red-800/40 opacity-50" /> Ocupado
-              </span>
+            <div className="mt-6 pt-4 border-t border-white/10 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs text-white/70">
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
+                <span className="w-3.5 h-3.5 rounded-md bg-white/20 border border-white/30" />
+                <span className="text-[11px] font-medium">Disponível</span>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand/15 border border-brand/40">
+                <span className="w-3.5 h-3.5 rounded-md bg-brand border border-brand/60 shadow-xs ring-2 ring-brand/30" />
+                <span className="text-[11px] font-semibold text-brand">Selecionado</span>
+              </div>
+              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/5 opacity-60">
+                <span className="w-3.5 h-3.5 rounded-md bg-red-950/80 border border-red-800/40" />
+                <span className="text-[11px] font-medium text-white/40">Ocupado</span>
+              </div>
             </div>
 
             {resultadoParcial?.falha?.length > 0 && (
@@ -345,19 +426,19 @@ export default function EventDetail() {
         </div>
       </div>
       {selecionados.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-xl bg-[#140509]/95 backdrop-blur-2xl border border-white/20 rounded-full px-7 py-3.5 flex items-center justify-between shadow-2xl shadow-black/90 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <div>
-            <span className="text-white/50 text-[10px] tracking-widest uppercase font-semibold block">
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-xl bg-[#140509]/95 backdrop-blur-2xl border border-brand/30 rounded-2xl sm:rounded-full px-5 sm:px-7 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl shadow-black/90 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
+          <div className="text-center sm:text-left">
+            <span className="text-white/60 text-[10px] tracking-widest uppercase font-semibold block">
               {selecionados.length} assento(s) selecionado(s)
             </span>
-            <p className="font-display text-2xl text-emerald-400 font-bold">
+            <p className="font-display text-2xl text-emerald-400 font-bold leading-tight">
               {formatarMoeda(valorTotal)}
             </p>
           </div>
           <button
             onClick={confirmarReserva}
             disabled={confirmando}
-            className="font-bold text-xs uppercase tracking-wider bg-linear-to-r from-brand via-[#bd224b] to-brand text-white hover:brightness-110 active:scale-95 disabled:opacity-50 rounded-full px-8 py-3.5 transition-all shadow-lg shadow-brand/30 cursor-pointer flex items-center gap-2"
+            className="w-full sm:w-auto font-bold text-xs uppercase tracking-wider bg-linear-to-r from-brand via-[#bd224b] to-brand text-white hover:brightness-110 active:scale-95 disabled:opacity-50 rounded-full px-8 py-3.5 transition-all shadow-lg shadow-brand/30 cursor-pointer flex items-center justify-center gap-2"
           >
             {confirmando ? (
               <>

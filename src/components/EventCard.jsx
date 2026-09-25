@@ -1,5 +1,6 @@
-import { memo } from "react";
+import { memo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import gsap from "gsap";
 import { usePosterEvento } from "../utils/usePosterEvento";
 import { corBadgeDoEvento } from "../utils/eventVisuals";
 
@@ -30,8 +31,54 @@ function formatarData(dataIso) {
 
 function EventCard({ evento }) {
   const navigate = useNavigate();
+  const cardRef = useRef(null);
+  const glowRef = useRef(null);
+  const arrowPathRef = useRef(null);
+
   const { imageUrl, imgLoading, imgReady, marcarPronto, marcarErro } =
     usePosterEvento(evento);
+
+  useEffect(() => {
+    const cardEl = cardRef.current;
+    if (!cardEl) return;
+
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+    if (prefersReducedMotion) return;
+
+    const ctx = gsap.context(() => {
+      const handleMouseEnter = () => {
+        gsap.to(cardEl, {
+          y: -6,
+          scale: 1.015,
+          duration: 0.35,
+          ease: "power2.out",
+        });
+        if (glowRef.current) {
+          gsap.to(glowRef.current, { opacity: 0.8, duration: 0.4 });
+        }
+      };
+
+      const handleMouseLeave = () => {
+        gsap.to(cardEl, {
+          y: 0,
+          scale: 1,
+          duration: 0.35,
+          ease: "power2.out",
+        });
+        if (glowRef.current) {
+          gsap.to(glowRef.current, { opacity: 0, duration: 0.3 });
+        }
+      };
+
+      cardEl.addEventListener("mouseenter", handleMouseEnter);
+      cardEl.addEventListener("mouseleave", handleMouseLeave);
+    }, cardRef);
+
+    return () => ctx.revert();
+  }, []);
 
   const precoFormatado = formatarPreco(
     evento?.preco || evento?.valorIngresso || evento?.valor
@@ -42,14 +89,26 @@ function EventCard({ evento }) {
 
   return (
     <button
+      ref={cardRef}
       type="button"
       onClick={() => navigate(`/eventos/${evento.id}`)}
       aria-label={`${tituloEvento}. ${dataFormatada ? `Data: ${dataFormatada}.` : ""} Local: ${localFormatado}.${precoFormatado ? ` A partir de ${precoFormatado}.` : ""}`}
-      className="group relative w-full text-left rounded-3xl overflow-hidden bg-[#140509]/80 hover:bg-[#1a070d] border border-white/10 hover:border-brand/50 shadow-xl hover:shadow-2xl hover:shadow-brand/20 hover:-translate-y-1.5 transition-all duration-300 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-black cursor-pointer flex flex-col justify-between transform-gpu"
+      style={{
+        WebkitMaskImage:
+          "radial-gradient(circle at 0% calc(100% - 100px), transparent 9px, black 9.5px), radial-gradient(circle at 100% calc(100% - 100px), transparent 9px, black 9.5px)",
+        maskImage:
+          "radial-gradient(circle at 0% calc(100% - 100px), transparent 9px, black 9.5px), radial-gradient(circle at 100% calc(100% - 100px), transparent 9px, black 9.5px)",
+        WebkitMaskComposite: "source-in",
+        maskComposite: "intersect",
+      }}
+      className="group relative w-full text-left rounded-3xl overflow-hidden bg-[#140509]/85 hover:bg-[#19060c] border border-white/10 hover:border-brand/60 shadow-xl hover:shadow-[0_16px_36px_rgba(161,27,62,0.25)] transition-colors duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-black cursor-pointer flex flex-col justify-between transform-gpu"
     >
-      <div className="absolute inset-0 bg-linear-to-t from-brand/15 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-10" />
+      <div
+        ref={glowRef}
+        className="absolute inset-0 bg-linear-to-t from-brand/20 via-brand/5 to-transparent opacity-0 pointer-events-none z-10"
+      />
 
-      <div className="relative aspect-2/3 w-full bg-[#0d0305] overflow-hidden">
+      <div className="relative aspect-2/3 w-full bg-[#0d0305] overflow-hidden select-none">
         {imgLoading && (
           <div className="absolute inset-0 animate-pulse bg-linear-to-br from-zinc-800 to-zinc-900" />
         )}
@@ -62,7 +121,7 @@ function EventCard({ evento }) {
             decoding="async"
             onLoad={marcarPronto}
             onError={marcarErro}
-            className={`w-full h-full object-cover object-center transform-gpu transition-all duration-500 ease-out group-hover:scale-105 ${
+            className={`w-full h-full object-cover object-center transform-gpu transition-transform duration-700 ease-out group-hover:scale-108 ${
               imgReady ? "opacity-100" : "opacity-0"
             }`}
           />
@@ -81,39 +140,57 @@ function EventCard({ evento }) {
           </div>
         )}
 
-        <div className="absolute inset-x-0 bottom-0 h-16 bg-linear-to-t from-black/80 to-transparent pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-0 h-24 bg-linear-to-t from-[#140509] via-[#140509]/60 to-transparent pointer-events-none" />
 
-        <span
-          className={`absolute top-3 left-3 ${corBadgeDoEvento(
-            evento?.tipo
-          )} text-white text-[10px] font-bold tracking-wider uppercase px-3 py-1 rounded-full shadow-md backdrop-blur-md border border-white/15 z-10`}
-        >
-          {evento?.tipo || "Evento"}
-        </span>
-
-        {precoFormatado && (
-          <span className="absolute bottom-3 right-3 bg-[#0b0306]/85 backdrop-blur-md border border-white/15 text-emerald-400 text-[11px] font-semibold px-3 py-1 rounded-full shadow-lg z-10">
-            <span className="text-white/50 text-[10px] mr-1 font-normal">A partir de</span>
-            {precoFormatado}
+        <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2 z-10">
+          <span
+            className={`${corBadgeDoEvento(
+              evento?.tipo
+            )} text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-full shadow-md backdrop-blur-md border border-white/20`}
+          >
+            {evento?.tipo || "Evento"}
           </span>
-        )}
-      </div>
 
-      <div className="p-4.5 flex flex-col justify-between flex-1 gap-3 relative z-10">
-        <div>
           {dataFormatada && (
-            <span className="text-[10px] font-bold text-brand tracking-widest uppercase block mb-1.5">
+            <span className="bg-bg/85 backdrop-blur-md border border-white/15 text-white/90 text-[10px] font-medium tracking-wide px-2.5 py-1 rounded-full shadow-sm">
               {dataFormatada}
             </span>
           )}
-          <h3 className="font-display text-sm md:text-base text-white uppercase tracking-wide leading-snug line-clamp-2 group-hover:text-brand-light transition-colors">
+        </div>
+
+        {precoFormatado && (
+          <div className="absolute bottom-3 right-3 bg-bg/90 backdrop-blur-md border border-emerald-500/30 text-emerald-400 text-[11px] font-semibold px-3 py-1 rounded-full shadow-xl z-10 flex items-center gap-1">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="text-white/60 text-[10px] font-normal">A partir de</span>
+            <span className="font-bold">{precoFormatado}</span>
+          </div>
+        )}
+      </div>
+
+      <div className="relative px-4 w-full flex items-center justify-center my-0 pointer-events-none select-none z-10">
+        <svg className="w-full h-1 text-white/15 overflow-visible" aria-hidden="true">
+          <line
+            x1="0"
+            y1="0"
+            x2="100%"
+            y2="0"
+            stroke="currentColor"
+            strokeWidth="1.5"
+            strokeDasharray="4 6"
+          />
+        </svg>
+      </div>
+
+      <div className="p-4 pt-3 flex flex-col justify-between flex-1 gap-3 relative z-10">
+        <div>
+          <h3 className="font-display text-sm md:text-base text-white uppercase tracking-wide leading-snug line-clamp-2 group-hover:text-brand-light transition-colors duration-200">
             {tituloEvento}
           </h3>
         </div>
 
-        <div className="pt-2.5 border-t border-white/10 flex items-center justify-between text-[11px] font-sans text-white/70 gap-2">
+        <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] font-sans text-white/70 gap-2">
           <div className="flex items-center min-w-0 truncate">
-            <svg className="w-3.5 h-3.5 text-brand shrink-0 mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+            <svg className="w-3.5 h-3.5 text-brand shrink-0 mr-1.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
               <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
               <circle cx="12" cy="10" r="3" />
             </svg>
@@ -122,9 +199,9 @@ function EventCard({ evento }) {
             </span>
           </div>
 
-          <span className="shrink-0 text-white/40 group-hover:text-brand group-hover:translate-x-0.5 transition-all">
-            <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="9 18 15 12 9 6" />
+          <span className="shrink-0 flex items-center justify-center w-6 h-6 rounded-full bg-white/5 group-hover:bg-brand text-white/40 group-hover:text-white transition-all duration-300">
+            <svg className="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path ref={arrowPathRef} d="M9 18l6-6-6-6" />
             </svg>
           </span>
         </div>

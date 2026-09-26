@@ -27,6 +27,16 @@ function formatarDataHora(dataString) {
   }
 }
 
+function formatarDataCompacta(data) {
+  if (!data || Number.isNaN(data.getTime())) return null;
+  return {
+    semana: data.toLocaleDateString("pt-BR", { weekday: "short" }).replace(".", "").toUpperCase(),
+    dia: data.toLocaleDateString("pt-BR", { day: "2-digit" }),
+    mes: data.toLocaleDateString("pt-BR", { month: "short" }).replace(".", "").toUpperCase(),
+    horario: data.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+  };
+}
+
 import bgImage from "../assets/background3.jpg";
 
 function gerarLayoutDinamico(totalAssentos) {
@@ -65,6 +75,7 @@ export default function EventDetail() {
 
   const { imageUrl, imgLoading, imgReady, marcarPronto, marcarErro } =
     usePosterEvento(evento);
+  const dataSessao = formatarDataCompacta(evento?.dataHora ? new Date(evento.dataHora) : null);
 
   const limiteLiberado = useMemo(() => {
     return evento?.quantidadeIngressos || evento?.capacidade || assentos.length;
@@ -216,7 +227,7 @@ export default function EventDetail() {
           className="w-full h-full object-cover object-center"
           loading="eager"
         />
-        <div className="absolute inset-0 bg-linear-to-b from-[#140509]/90 via-[#0b0306]/92 to-[#090204]" />
+        <div className="absolute inset-0 bg-linear-to-b from-[#140509]/90 via-bg/92 to-[#090204]" />
         <div
           className="pointer-events-none absolute -top-40 right-0 w-140 h-140 rounded-full opacity-15 blur-3xl"
           style={{ background: "radial-gradient(circle, #a11b3e 0%, transparent 70%)" }}
@@ -227,10 +238,10 @@ export default function EventDetail() {
         />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
-        <div className="lg:col-span-4 bg-[#140509]/85 border border-white/15 rounded-3xl p-6 shadow-2xl flex flex-col justify-between backdrop-blur-2xl">
+      <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-7 items-start">
+        <div className="lg:col-span-4 bg-[#140509]/85 border border-white/15 rounded-2xl p-4 sm:p-5 shadow-2xl backdrop-blur-2xl">
           <div>
-            <div className="relative aspect-3/4 w-full rounded-2xl overflow-hidden mb-6 bg-[#0d0305] border border-white/10 flex items-center justify-center shadow-xl">
+            <div className="relative aspect-3/4 w-full rounded-xl overflow-hidden mb-5 bg-[#0d0305] border border-white/10 flex items-center justify-center shadow-xl">
               {imgLoading && (
                 <div className="absolute inset-0 animate-pulse bg-linear-to-br from-zinc-800 to-zinc-900" />
               )}
@@ -261,11 +272,31 @@ export default function EventDetail() {
               <span className="absolute top-4 left-4 bg-brand text-white text-[10px] font-bold tracking-widest uppercase px-3 py-1 rounded-full shadow-lg z-10 border border-white/20">
                 {evento.tipo || "CINEMA"}
               </span>
+              <a
+                href="#informacoes-evento"
+                className="absolute bottom-3 left-3 inline-flex items-center gap-2 rounded-lg border border-white/20 bg-bg/80 px-3 py-2 text-xs font-semibold text-white backdrop-blur-md transition-colors hover:bg-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand"
+              >
+                Mais informações
+                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                  <path d="M7 17 17 7M7 7h10v10" />
+                </svg>
+              </a>
             </div>
 
-            <h2 className="font-display text-2xl uppercase tracking-wider text-white font-bold mb-3 leading-snug">
+            <p className="text-[10px] uppercase tracking-[0.18em] text-white/45">Atração principal</p>
+            <h2 className="font-display text-2xl uppercase text-white font-bold mb-3 leading-snug">
               {evento.titulo}
             </h2>
+
+            <section className="border-t border-white/10 py-3">
+              <p className="text-[10px] uppercase tracking-[0.18em] text-white/45">Lineup / artista</p>
+              <p className="mt-1 text-sm text-white/80">{evento.artista || evento.lineup || "Detalhes do artista não informados"}</p>
+            </section>
+
+            <section className="border-t border-white/10 py-3">
+              <p className="text-[10px] uppercase tracking-[0.18em] text-white/45">Gênero / tipo</p>
+              <p className="mt-1 text-sm text-white/80">{evento.genero || evento.tipo || "Evento"}</p>
+            </section>
 
             <div className="flex flex-wrap items-center gap-2 mb-4">
               {evento.dataHora && (
@@ -286,11 +317,12 @@ export default function EventDetail() {
               )}
             </div>
 
-            {evento.descricao && (
-              <p className="font-sans text-xs text-white/60 leading-relaxed mb-4 line-clamp-3">
-                {evento.descricao}
+            <section id="informacoes-evento" className="border-t border-white/10 pt-3">
+              <p className="text-[10px] uppercase tracking-[0.18em] text-white/45">Informações adicionais</p>
+              <p className="mt-1 font-sans text-xs text-white/60 leading-relaxed line-clamp-4">
+                {evento.descricao || "Informações adicionais não disponíveis."}
               </p>
-            )}
+            </section>
           </div>
 
           <div className="pt-4 border-t border-white/10 text-xs text-white/70 space-y-2.5">
@@ -308,17 +340,17 @@ export default function EventDetail() {
           </div>
         </div>
 
-        <div className="lg:col-span-8 bg-[#140509]/85 border border-white/15 rounded-3xl p-6 md:p-8 shadow-2xl flex flex-col justify-between backdrop-blur-2xl">
+        <div className="lg:col-span-8 min-w-0 bg-[#140509]/85 border border-white/15 rounded-2xl p-4 sm:p-6 md:p-7 shadow-2xl backdrop-blur-2xl">
           <div>
             <nav aria-label="Progresso da compra" className="flex items-center gap-2 sm:gap-3 text-xs font-semibold pb-5 border-b border-white/10 overflow-x-auto scrollbar-none">
               <div className="flex items-center gap-2 text-emerald-400">
                 <span className="w-5 h-5 rounded-full bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-[10px] font-bold">✓</span>
-                <span className="hidden sm:inline">01. Evento</span>
+                <span className="hidden sm:inline">01. Escolher evento</span>
               </div>
               <span className="text-white/20">/</span>
               <div className="flex items-center gap-2 text-white">
                 <span className="w-5 h-5 rounded-full bg-brand text-white flex items-center justify-center text-[10px] font-bold shadow-md shadow-brand/40">2</span>
-                <span className="font-bold tracking-wide">02. Assentos</span>
+                <span className="font-bold tracking-wide">02. Escolher lugares</span>
               </div>
               <span className="text-white/20">/</span>
               <div className="flex items-center gap-2 text-white/40">
@@ -328,17 +360,19 @@ export default function EventDetail() {
               <span className="text-white/20">/</span>
               <div className="flex items-center gap-2 text-white/40">
                 <span className="w-5 h-5 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px]">4</span>
-                <span className="hidden sm:inline">04. Concluído</span>
+                <span className="hidden sm:inline">04. Concluir</span>
               </div>
             </nav>
 
             <div className="flex flex-wrap items-center justify-between gap-3 pt-5 pb-3">
               <div>
                 <h1 className="font-display text-2xl sm:text-3xl text-white tracking-wide font-bold">
-                  SELEÇÃO DE ASSENTOS
+                  {evento.titulo}
                 </h1>
-                <p className="font-sans text-xs text-white/50 mt-1">
-                  Clique sobre os assentos desejados no mapa abaixo.
+                <p className="mt-2 flex flex-wrap gap-x-3 gap-y-1 font-sans text-[11px] text-white/55">
+                  <span>{evento.duracao ? `${evento.duracao} min` : "Duração não informada"}</span>
+                  <span>{evento.classificacaoIndicativa || evento.classificacao || "Classificação não informada"}</span>
+                  {evento.dataHora && <span>{formatarDataHora(evento.dataHora)}</span>}
                 </p>
               </div>
               <span className="px-3 py-1 rounded-full text-xs font-medium bg-white/5 border border-white/10 text-white/70">
@@ -346,24 +380,55 @@ export default function EventDetail() {
               </span>
             </div>
 
-            <div className="mt-6 mb-4 flex flex-col items-center">
-              <div className="w-full max-w-lg h-10 bg-linear-to-b from-brand/20 via-brand/5 to-transparent rounded-t-[100px] border-t-2 border-brand shadow-[0_-8px_30px_rgba(161,27,62,0.4)] flex items-center justify-center" />
-              <span className="text-[10px] tracking-[0.45em] text-white/40 uppercase mt-2 font-bold flex items-center gap-2">
-                <span className="w-1.5 h-1.5 rounded-full bg-brand animate-pulse" />
-                T E L A  /  P A L C O
-              </span>
-            </div>
-            
-            <div className="py-2 overflow-x-auto flex justify-center scrollbar-thin">
-              <div className="min-w-fit px-2">
-                <SeatMap
-                  assentos={assentos}
-                  selecionados={selecionados}
-                  onToggle={toggleAssentoPorId}
-                  layout={layoutDinamico}
-                  limiteAtingido={selecionados.length >= vagasDisponiveisNoEvento}
-                />
+            <div className="flex flex-wrap items-end justify-between gap-4 border-y border-white/10 py-3.5">
+              <div>
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-white/45">Data</p>
+                {dataSessao ? (
+                  <span aria-current="date" className="flex min-w-14 flex-col items-center rounded-lg border border-brand/50 bg-brand/15 px-3 py-1.5 text-white">
+                    <span className="text-[9px] font-bold text-brand">{dataSessao.semana}</span>
+                    <span className="text-sm font-bold">{dataSessao.dia} <span className="text-[9px]">{dataSessao.mes}</span></span>
+                  </span>
+                ) : <span className="text-xs text-white/55">Data a confirmar</span>}
               </div>
+              <div>
+                <p className="mb-2 text-[10px] font-semibold uppercase tracking-wider text-white/45">Sessão</p>
+                {dataSessao ? (
+                  <span aria-current="true" className="inline-flex min-w-20 items-center justify-center rounded-lg border border-brand/50 bg-brand/15 px-4 py-2 text-xs font-bold text-white">
+                    {dataSessao.horario}
+                  </span>
+                ) : <span className="text-xs text-white/55">Horário a confirmar</span>}
+              </div>
+              <span className="pb-2 text-[11px] text-white/45">{vagasDisponiveisNoEvento} lugares disponíveis</span>
+            </div>
+
+            <div className="relative mt-4 rounded-xl border border-white/10 bg-bg/35 px-2 py-5 pb-20 sm:px-4">
+              <SeatMap
+                assentos={assentos}
+                selecionados={selecionados}
+                onToggle={toggleAssentoPorId}
+                layout={layoutDinamico}
+                limiteAtingido={selecionados.length >= vagasDisponiveisNoEvento}
+              />
+
+              <button
+                type="button"
+                onClick={confirmarReserva}
+                disabled={selecionados.length === 0 || confirmando}
+                aria-label={confirmando ? "Reservando assentos" : "Avançar para pagamento"}
+                title={confirmando ? "Reservando..." : "Avançar para pagamento"}
+                className="absolute bottom-4 right-4 flex h-12 w-12 items-center justify-center rounded-full border border-white/25 bg-brand text-white shadow-lg shadow-brand/25 transition-[transform,background-color,opacity] duration-100 hover:enabled:scale-105 hover:enabled:bg-brand/85 active:enabled:scale-95 disabled:cursor-not-allowed disabled:opacity-35 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-bg"
+              >
+                {confirmando ? (
+                  <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10" className="opacity-25" />
+                    <path d="M4 12a8 8 0 0 1 8-8" className="opacity-90" />
+                  </svg>
+                ) : (
+                  <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M12 5l7 7-7 7" />
+                  </svg>
+                )}
+              </button>
             </div>
 
             {selecionados.length > 0 && (
@@ -390,26 +455,12 @@ export default function EventDetail() {
                     </span>
                   );
                 })}
+                <span className="ml-auto text-xs font-semibold text-emerald-400">{formatarMoeda(valorTotal)}</span>
               </div>
             )}
           </div>
           
           <div>
-            <div className="mt-6 pt-4 border-t border-white/10 flex flex-wrap items-center justify-center gap-3 sm:gap-6 text-xs text-white/70">
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10">
-                <span className="w-3.5 h-3.5 rounded-md bg-white/20 border border-white/30" />
-                <span className="text-[11px] font-medium">Disponível</span>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand/15 border border-brand/40">
-                <span className="w-3.5 h-3.5 rounded-md bg-brand border border-brand/60 shadow-xs ring-2 ring-brand/30" />
-                <span className="text-[11px] font-semibold text-brand">Selecionado</span>
-              </div>
-              <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/5 opacity-60">
-                <span className="w-3.5 h-3.5 rounded-md bg-red-950/80 border border-red-800/40" />
-                <span className="text-[11px] font-medium text-white/40">Ocupado</span>
-              </div>
-            </div>
-
             {resultadoParcial?.falha?.length > 0 && (
               <div className="mt-6 bg-red-950/80 border border-red-500/50 rounded-2xl p-4 text-xs text-red-200">
                 <p className="font-bold mb-1">Erro ao reservar assento(s):</p>
@@ -425,35 +476,6 @@ export default function EventDetail() {
           </div>
         </div>
       </div>
-      {selecionados.length > 0 && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] max-w-xl bg-[#140509]/95 backdrop-blur-2xl border border-brand/30 rounded-2xl sm:rounded-full px-5 sm:px-7 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-2xl shadow-black/90 z-50 animate-in fade-in slide-in-from-bottom-4 duration-300">
-          <div className="text-center sm:text-left">
-            <span className="text-white/60 text-[10px] tracking-widest uppercase font-semibold block">
-              {selecionados.length} assento(s) selecionado(s)
-            </span>
-            <p className="font-display text-2xl text-emerald-400 font-bold leading-tight">
-              {formatarMoeda(valorTotal)}
-            </p>
-          </div>
-          <button
-            onClick={confirmarReserva}
-            disabled={confirmando}
-            className="w-full sm:w-auto font-bold text-xs uppercase tracking-wider bg-linear-to-r from-brand via-[#bd224b] to-brand text-white hover:brightness-110 active:scale-95 disabled:opacity-50 rounded-full px-8 py-3.5 transition-all shadow-lg shadow-brand/30 cursor-pointer flex items-center justify-center gap-2"
-          >
-            {confirmando ? (
-              <>
-                <svg className="w-4 h-4 animate-spin text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" />
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
-                </svg>
-                <span>Reservando...</span>
-              </>
-            ) : (
-              <span>Confirmar Reserva</span>
-            )}
-          </button>
-        </div>
-      )}
     </div>
   );
 }

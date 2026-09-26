@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useCallback } from "react";
 
 function isOcupado(status) {
   return status === "OCUPADO" || status === "RESERVADO" || status === "VENDIDO";
@@ -6,19 +6,12 @@ function isOcupado(status) {
 
 function formatarStatusTexto(status, selecionado, bloqueado) {
   if (selecionado) return "Selecionado";
-  if (isOcupado(status)) return "Indisponível";
+  if (isOcupado(status)) return "Ocupado";
   if (bloqueado) return "Limite de assentos atingido";
-  return "Disponível";
+  return "Livre";
 }
 
-const SeatButton = memo(function SeatButton({
-  id,
-  codigo,
-  status,
-  estaSelecionado,
-  limiteAtingido,
-  onToggle,
-}) {
+const SeatButton = memo(function SeatButton({ id, codigo, status, estaSelecionado, limiteAtingido }) {
   const ocupado = isOcupado(status);
   const bloqueado = !estaSelecionado && limiteAtingido;
   const rotuloAssento = codigo || id;
@@ -26,28 +19,26 @@ const SeatButton = memo(function SeatButton({
 
   let classesEstilo;
   if (estaSelecionado) {
-    classesEstilo =
-      "bg-brand border-white/60 text-white font-bold ring-2 ring-brand/50 shadow-md shadow-brand/40 scale-105 z-10 cursor-pointer";
+    classesEstilo = "bg-brand border-white/60 text-white font-bold ring-2 ring-brand/50 z-10 cursor-pointer";
   } else if (ocupado) {
-    classesEstilo =
-      "bg-white/[0.03] border-white/5 text-white/20 cursor-not-allowed opacity-50";
+    classesEstilo = "bg-white/[0.03] border-white/5 text-white/20 cursor-not-allowed opacity-50";
   } else if (bloqueado) {
-    classesEstilo =
-      "bg-white/[0.04] border-white/5 text-white/20 cursor-not-allowed opacity-35";
+    classesEstilo = "bg-white/[0.04] border-white/5 text-white/20 cursor-not-allowed opacity-35";
   } else {
     classesEstilo =
-      "bg-white/10 hover:bg-white/25 border-white/15 hover:border-white/40 text-white/90 hover:text-white hover:scale-110 active:scale-95 cursor-pointer shadow-sm";
+      "bg-white/10 hover:bg-white/25 border-white/15 hover:border-white/40 text-white/90 hover:text-white active:scale-95 cursor-pointer shadow-sm";
   }
 
   return (
     <button
       type="button"
+      data-seat-id={id}
       disabled={ocupado || bloqueado}
-      onClick={() => onToggle(id)}
       aria-pressed={estaSelecionado}
       aria-label={`Assento ${rotuloAssento} - ${statusDescricao}`}
       title={`Assento ${rotuloAssento} (${statusDescricao})`}
-      className={`w-7 h-7 sm:w-8.5 sm:h-8.5 rounded-t-lg rounded-b-sm border text-[10px] sm:text-[11px] font-sans font-medium transition-all duration-200 transform-gpu flex items-center justify-center select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-black ${classesEstilo}`}
+      style={{ transition: "transform 0.1s ease, background-color 0.1s ease" }}
+      className={`w-7 h-7 sm:w-8.5 sm:h-8.5 rounded-md border text-[10px] sm:text-[11px] font-sans font-medium flex items-center justify-center select-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-offset-2 focus-visible:ring-offset-black ${classesEstilo}`}
     >
       {rotuloAssento}
     </button>
@@ -56,18 +47,18 @@ const SeatButton = memo(function SeatButton({
 
 function LegendaMapa() {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-6 py-4 text-xs font-sans text-white/60 border-t border-white/10 mt-6 select-none">
+    <div className="flex flex-wrap items-center justify-center gap-6 py-4 text-xs font-sans text-white/60 border-t border-white/10 mt-5 select-none">
       <div className="flex items-center gap-2">
-        <span className="w-4 h-4 rounded-t-md rounded-b-xs bg-white/10 border border-white/20 inline-block shadow-xs" />
-        <span>Disponível</span>
+        <span className="w-4 h-4 rounded-md bg-white/10 border border-white/20 inline-block" />
+        <span>Livre</span>
       </div>
       <div className="flex items-center gap-2">
-        <span className="w-4 h-4 rounded-t-md rounded-b-xs bg-brand border border-white/60 ring-2 ring-brand/40 shadow-xs shadow-brand inline-block" />
+        <span className="w-4 h-4 rounded-md bg-white/4 border border-white/5 opacity-50 inline-block" />
+        <span>Ocupado</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <span className="w-4 h-4 rounded-md bg-brand border border-white/60 ring-2 ring-brand/40 inline-block" />
         <span className="text-white font-medium">Selecionado</span>
-      </div>
-      <div className="flex items-center gap-2">
-        <span className="w-4 h-4 rounded-t-md rounded-b-xs bg-white/4 border border-white/5 opacity-50 inline-block" />
-        <span>Indisponível</span>
       </div>
     </div>
   );
@@ -79,9 +70,7 @@ function PalcoIndicador() {
       <div className="relative w-full max-w-lg flex flex-col items-center">
         <div
           className="w-full h-8 border-t-2 border-brand/60 rounded-t-[100%] opacity-80"
-          style={{
-            boxShadow: "0 -8px 24px -4px rgba(161, 27, 62, 0.45)",
-          }}
+          style={{ boxShadow: "0 -8px 24px -4px rgba(161, 27, 62, 0.45)" }}
         />
         <span className="font-sans text-[10px] sm:text-xs font-bold uppercase tracking-[0.3em] text-white/60 -mt-2 bg-[#120408] px-4 py-0.5 rounded-full border border-white/10">
           PALCO / TELA
@@ -91,44 +80,29 @@ function PalcoIndicador() {
   );
 }
 
-function GridSimples({ assentos, selecionados, onToggle, limiteAtingido }) {
+function RowLetter({ letra }) {
   return (
-    <div className="grid grid-cols-6 sm:grid-cols-8 md:grid-cols-10 gap-2 sm:gap-2.5 justify-items-center py-4">
-      {assentos.map((assento) => (
-        <SeatButton
-          key={assento.id}
-          id={assento.id}
-          codigo={assento.codigo}
-          status={assento.status}
-          estaSelecionado={selecionados.includes(assento.id)}
-          limiteAtingido={limiteAtingido}
-          onToggle={onToggle}
-        />
-      ))}
-    </div>
+    <span className="w-5 text-center font-bold font-mono text-[11px] text-white/40 uppercase">
+      {letra}
+    </span>
   );
 }
 
-function RowsAisle({ assentos, selecionados, onToggle, layout, limiteAtingido }) {
+function SeatsGrid({ assentos, selecionados, layout, limiteAtingido }) {
   const { rowLabels, groupSizes } = layout;
   const porFileira = groupSizes.reduce((a, b) => a + b, 0);
+  const nomesBloco = ["Esquerdo", "Central", "Direito"];
 
   return (
-    <div className="py-2 space-y-2.5 overflow-x-auto flex flex-col items-center max-w-full px-2">
+    <div className="flex flex-col items-center gap-2.5 py-2">
       {rowLabels.map((rowLabel, rowIndex) => {
         const cursor = rowIndex * porFileira;
         const assentosDaFileira = assentos.slice(cursor, cursor + porFileira);
-
         let posicaoNaFileira = 0;
 
         return (
-          <div
-            key={rowLabel}
-            className="flex items-center justify-center gap-2 sm:gap-3.5 min-w-max select-none"
-          >
-            <span className="w-5 text-center font-bold font-mono text-[11px] text-white/40 uppercase">
-              {rowLabel}
-            </span>
+          <div key={rowLabel} className="flex items-center justify-center gap-3 sm:gap-4 min-w-max select-none">
+            <RowLetter letra={rowLabel} />
 
             {groupSizes.map((tamanhoGrupo, grupoIdx) => {
               const inicioGrupo = posicaoNaFileira;
@@ -139,22 +113,16 @@ function RowsAisle({ assentos, selecionados, onToggle, layout, limiteAtingido })
               return (
                 <div
                   key={grupoIdx}
-                  className={`flex gap-1.5 sm:gap-2 ${
-                    isGrupoCentral ? "mx-3 sm:mx-5 relative after:content-[''] after:absolute after:-left-2 sm:after:-left-3.5 after:top-1/2 after:-translate-y-1/2 after:w-px after:h-4 after:bg-white/10" : ""
-                  }`}
+                  role="group"
+                  aria-label={`Bloco ${nomesBloco[grupoIdx] ?? grupoIdx + 1}`}
+                  className={`grid gap-1.5 sm:gap-2 ${isGrupoCentral ? "mx-3 sm:mx-5" : ""}`}
+                  style={{ gridTemplateColumns: `repeat(${tamanhoGrupo}, minmax(0, 1fr))` }}
                 >
                   {Array.from({ length: tamanhoGrupo }).map((_, i) => {
                     const assento = assentosDoGrupo[i];
-
                     if (!assento) {
-                      return (
-                        <span
-                          key={`vazio-${rowLabel}-${grupoIdx}-${i}`}
-                          className="w-7 h-7 sm:w-8.5 sm:h-8.5 opacity-0 pointer-events-none"
-                        />
-                      );
+                      return <span key={`vazio-${rowLabel}-${grupoIdx}-${i}`} className="w-7 h-7 sm:w-8.5 sm:h-8.5" />;
                     }
-
                     return (
                       <SeatButton
                         key={assento.id}
@@ -163,7 +131,6 @@ function RowsAisle({ assentos, selecionados, onToggle, layout, limiteAtingido })
                         status={assento.status}
                         estaSelecionado={selecionados.includes(assento.id)}
                         limiteAtingido={limiteAtingido}
-                        onToggle={onToggle}
                       />
                     );
                   })}
@@ -171,9 +138,7 @@ function RowsAisle({ assentos, selecionados, onToggle, layout, limiteAtingido })
               );
             })}
 
-            <span className="w-5 text-center font-bold font-mono text-[11px] text-white/40 uppercase">
-              {rowLabel}
-            </span>
+            <RowLetter letra={rowLabel} />
           </div>
         );
       })}
@@ -182,29 +147,29 @@ function RowsAisle({ assentos, selecionados, onToggle, layout, limiteAtingido })
 }
 
 export default memo(function SeatMap({ assentos, selecionados, onToggle, layout, limiteAtingido = false }) {
-  const isRowsAisle = layout?.type === "rows-aisle";
+  const handleContainerClick = useCallback(
+    (event) => {
+      const botao = event.target.closest("button[data-seat-id]");
+      if (!botao || botao.disabled) return;
+      onToggle(botao.dataset.seatId);
+    },
+    [onToggle]
+  );
 
   return (
-    <div className="w-full bg-[#140509]/60 backdrop-blur-xl border border-white/10 rounded-3xl p-4 sm:p-7 md:p-8 shadow-2xl relative">
+    <div className="w-full">
       <PalcoIndicador />
 
-      <div className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
-        {isRowsAisle ? (
-          <RowsAisle
-            assentos={assentos}
-            selecionados={selecionados}
-            onToggle={onToggle}
-            layout={layout}
-            limiteAtingido={limiteAtingido}
-          />
-        ) : (
-          <GridSimples
-            assentos={assentos}
-            selecionados={selecionados}
-            onToggle={onToggle}
-            limiteAtingido={limiteAtingido}
-          />
-        )}
+      <div
+        className="overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent"
+        onClick={handleContainerClick}
+      >
+        <SeatsGrid
+          assentos={assentos}
+          selecionados={selecionados}
+          layout={layout}
+          limiteAtingido={limiteAtingido}
+        />
       </div>
 
       <LegendaMapa />

@@ -36,9 +36,16 @@ export function useEventDetail(eventoId) {
     },
   });
 
+  const dadosAssentos = assentosQuery.data;
+  const assentos = Array.isArray(dadosAssentos)
+    ? dadosAssentos
+    : Array.isArray(dadosAssentos?.content)
+      ? dadosAssentos.content
+      : [];
+
   return {
     evento: eventoQuery.data,
-    assentos: assentosQuery.data || [],
+    assentos,
     isLoading: eventoQuery.isLoading || assentosQuery.isLoading,
     error: eventoQuery.error || assentosQuery.error,
     reservarMutation,
